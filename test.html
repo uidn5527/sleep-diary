@@ -4,22 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.6</title>
+<title>Sleep Diary — Test v0.7</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
 nav{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:2}nav button{border:0;background:none;padding:11px 4px;color:#666}nav button.active{color:#111;font-weight:600;border-bottom:2px solid #111}
-main{max-width:760px;margin:auto;padding:16px 14px 40px}.panel{background:#fff;border:1px solid #ddd;border-radius:12px;padding:14px;margin-bottom:14px}h2{font-size:17px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.event-groups{display:flex;flex-direction:column;gap:12px}.event-group{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.event-group.sleep .action{background:#dbe9f7;border-color:#b6cee5}.event-group.nap .action{background:#e5f0df;border-color:#bfd5b5}.event-group.device .action{background:#f1e3d2;border-color:#dbc5a9}.night .event-group.sleep .action{background:#263e59;border-color:#3d5b7b}.night .event-group.nap .action{background:#30452f;border-color:#4d684b}.night .event-group.device .action{background:#4a3b2d;border-color:#6b5741}.action{min-height:64px;font-size:17px;border:1px solid #ccc;border-radius:10px;font-weight:600;color:#222}.night .action{color:#f5f7fa}.action:active{background:#eee}
-label{display:block;font-size:13px;color:#555;margin:11px 0 5px}input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid #bbb;border-radius:8px;background:#fff}textarea{min-height:90px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+main{max-width:760px;margin:auto;padding:16px 14px 40px}.panel{background:#fff;border:1px solid #ddd;border-radius:12px;padding:14px;margin-bottom:14px}h2{font-size:17px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.event-groups{display:flex;flex-direction:column;gap:16px}.event-group{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.event-group.sleep .action{background:#dbe9f7;border-color:#b6cee5}.event-group.nap .action{background:#e5f0df;border-color:#bfd5b5}.event-group.device .action{background:#f1e3d2;border-color:#dbc5a9}.night .event-group.sleep .action{background:#263e59;border-color:#3d5b7b}.night .event-group.nap .action{background:#30452f;border-color:#4d684b}.night .event-group.device .action{background:#4a3b2d;border-color:#6b5741}.action{min-height:64px;font-size:17px;border:1px solid #ccc;border-radius:10px;font-weight:600;color:#222}.night .action{color:#f5f7fa}.action:active{background:#eee}
+label{display:block;font-size:13px;color:#555;margin:11px 0 5px;min-width:0}input,select,textarea{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;font:inherit;padding:10px;border:1px solid #bbb;border-radius:8px;background:#fff}textarea{min-height:90px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button.secondary,button.primary,button.danger{border:1px solid #bbb;border-radius:8px;padding:10px 12px;background:#fff;font:inherit}button.primary{background:#222;color:#fff;border-color:#222}button.danger{color:#9b0000}.muted{color:#666;font-size:13px}.event{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eee}.event:last-child{border-bottom:0}.event strong{font-size:14px}.event small{color:#666}.day{padding:12px 0;border-bottom:1px solid #eee}.day:last-child{border-bottom:0}.dayhead{display:flex;justify-content:space-between;gap:10px}.pill{font-size:12px;background:#eee;border-radius:999px;padding:3px 8px;white-space:nowrap}
-table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #bbb;padding:6px;vertical-align:top;text-align:left}th{background:#eee}.reportwrap{overflow:auto}.hide{display:none}.dialog-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding:14px;z-index:20}.dialog{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.25)}.night .dialog{background:var(--surface);color:var(--text)}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.dialog label{margin-top:10px}.saved{font-size:12px;color:#666;text-align:right;margin-top:7px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #bbb;padding:6px;vertical-align:top;text-align:left}th{background:#eee}.reportwrap{overflow:auto}.hide{display:none}.dialog-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding:14px;z-index:20}.dialog{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.25)}.night .dialog{background:var(--surface);color:var(--text)}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap}.dialog label{margin-top:10px}.saved{font-size:12px;color:#666;text-align:right;margin-top:7px}
 @media(min-width:650px){.grid{grid-template-columns:repeat(3,1fr)}.event-group{grid-template-columns:repeat(3,1fr)}.event-group.nap,.event-group.device{grid-template-columns:repeat(2,1fr)}}
 @media print{body{background:#fff}header,nav,.noprint{display:none!important}main{max-width:none;padding:0}.panel{border:0;padding:0}.reportwrap{overflow:visible}table{font-size:10px}h2{margin-top:0}}
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.6</span></div></header>
-<nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button></nav>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.7</span></div></header>
+<nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button></nav>
 <main>
 <section id="today" class="view">
 <div class="panel"><div class="event-groups">
@@ -27,8 +27,12 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 <div class="event-group nap"><button class="action" data-event="napStart">Nap start</button><button class="action" data-event="napEnd">Nap end</button></div>
 <div class="event-group device"><button class="action" data-event="deviceOff">Device off</button><button class="action" data-event="deviceOn">Device on</button></div>
 </div></div>
+<div class="panel"><h2>Manual entry</h2><button class="secondary" id="manualEntry" style="width:100%">Manual event entry</button></div>
+</section>
+
+<section id="diary" class="view hide">
 <div class="panel"><h2>Diary date</h2><label>Sleep period date <input id="dayDate" type="date"></label></div>
-<div class="panel"><h2>Recorded entries</h2><div id="events"></div><button class="secondary" id="manualEntry" style="margin-top:10px;width:100%">Manual event entry</button></div>
+<div class="panel"><h2>Recorded entries</h2><div id="events"></div><button class="secondary" id="manualEntryDiary" style="margin-top:10px;width:100%">Manual event entry</button></div>
 </section>
 
 <section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" onclick="window.print()">Print / PDF</button></div><div class="reportwrap"><table><thead><tr><th>Date</th><th>Bed</th><th>Got in bed</th><th>Latency</th><th>Awakenings</th><th>Total awake</th><th>Final awakening</th><th>Out of bed</th><th>Quality</th><th>Naps</th><th>Device</th><th>Comments</th></tr></thead><tbody id="reportBody"></tbody></table></div></div></section>
@@ -82,17 +86,44 @@ function detailsDialog(){
 async function editEvent(id){
   let x=await get(currentDate),e=(x.events||[]).find(e=>e.id===id);if(!e)return;
   const overlay=document.createElement('div');overlay.className='dialog-backdrop';
-  overlay.innerHTML='<div class="dialog"><h2>Edit entry</h2><label>Event type<select id="etype">'+Object.entries(labels).filter(([k])=>k!=='sleepDetails').map(([k,v])=>'<option value="'+k+'">'+v+'</option>').join('')+'</select></label><label>Date<input id="edate" type="date"></label><label>Time<input id="etime" type="time"></label><div class="dialog-actions"><button class="secondary" id="ecancel">Cancel</button><button class="primary" id="esave">Save</button></div></div>';
-  document.body.append(overlay);let d=new Date(e.t),p=n=>String(n).padStart(2,'0');overlay.querySelector('#etype').value=e.type;overlay.querySelector('#edate').value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());overlay.querySelector('#etime').value=p(d.getHours())+':'+p(d.getMinutes());
-  overlay.querySelector('#ecancel').onclick=()=>overlay.remove();
-  overlay.querySelector('#esave').onclick=async()=>{let oldDate=currentDate,newDate=overlay.querySelector('#edate').value,t=localMs(newDate,overlay.querySelector('#etime').value),type=overlay.querySelector('#etype').value;overlay.remove();if(newDate!==oldDate){x.events=x.events.filter(q=>q.id!==id);await put(x);let y=await get(newDate);y.events=y.events||[];y.events.push({id,type,t});await put(y);currentDate=newDate}else{e.t=t;e.type=type;await put(x)}await loadDay();renderAll()};
+  const box=document.createElement('div');box.className='dialog';
+  box.innerHTML='<h2>Edit entry</h2><label>Event type<select></select></label><label>Date<input type="date"></label><label>Time<input type="time"></label><div class="dialog-actions"><button class="secondary">Cancel</button><button class="primary">Save</button></div>';
+  overlay.append(box);document.body.append(overlay);
+  const sel=box.querySelector('select'),dateInput=box.querySelector('input[type="date"]'),timeInput=box.querySelector('input[type="time"]'),cancel=box.querySelector('.secondary'),save=box.querySelector('.primary');
+  Object.entries(labels).filter(([k])=>k!=='sleepDetails').forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=v;sel.append(o)});
+  let d=new Date(e.t),p=n=>String(n).padStart(2,'0');sel.value=e.type;dateInput.value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());timeInput.value=p(d.getHours())+':'+p(d.getMinutes());
+  cancel.onclick=()=>overlay.remove();
+  save.onclick=async()=>{
+    if(!dateInput.value||!timeInput.value){alert('Please enter both a date and time.');return}
+    let oldDate=currentDate,newDate=dateInput.value,t=localMs(newDate,timeInput.value),type=sel.value;
+    overlay.remove();
+    if(newDate!==oldDate){
+      x.events=x.events.filter(q=>q.id!==id);x.naps=(x.naps||[]).filter(n=>n.id!==id);await put(x);
+      let y=await get(newDate);y.events=y.events||[];y.events.push({id,type,t});
+      if(type==='napStart'){y.naps=y.naps||[];y.naps.push({id,start:t,end:null})}
+      await put(y);currentDate=newDate;
+    }else{e.t=t;e.type=type;await put(x)}
+    document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();
+  };
 }
 async function editDetails(id){
   let x=await get(currentDate),d=(x.details||[]).find(q=>q.id===id);if(!d)return;
   const overlay=document.createElement('div');overlay.className='dialog-backdrop';
-  overlay.innerHTML='<div class="dialog"><h2>Edit sleep details</h2><label>Date<input id="eddate" type="date"></label><label>Time<input id="edtime" type="time"></label><label>Sleep latency (minutes)<input id="dlat" type="number" min="0"></label><label>Number of awakenings<input id="dawak" type="number" min="0"></label><label>Total awake time (minutes)<input id="dawake" type="number" min="0"></label><label>Sleep quality<select id="dquality"><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea id="dcomments"></textarea></label><div class="dialog-actions"><button class="secondary" id="dcancel">Cancel</button><button class="primary" id="dsave">Save</button></div></div>';
-  document.body.append(overlay);let z=new Date(d.t),p=n=>String(n).padStart(2,'0');overlay.querySelector('#eddate').value=z.getFullYear()+'-'+p(z.getMonth()+1)+'-'+p(z.getDate());overlay.querySelector('#edtime').value=p(z.getHours())+':'+p(z.getMinutes());['lat','awak','awakeDur','quality','comments'].forEach(k=>overlay.querySelector('#d'+k).value=d[k]??'');
-  overlay.querySelector('#dcancel').onclick=()=>overlay.remove();overlay.querySelector('#dsave').onclick=async()=>{d.t=localMs(overlay.querySelector('#eddate').value,overlay.querySelector('#edtime').value);['lat','awak','awakeDur','quality','comments'].forEach(k=>d[k]=overlay.querySelector('#d'+k).value);await put(x);overlay.remove();await loadDay();renderAll()};
+  const box=document.createElement('div');box.className='dialog';
+  box.innerHTML='<h2>Edit sleep details</h2><label>Date<input type="date"></label><label>Time<input type="time"></label><label>Sleep latency (minutes)<input type="number" min="0"></label><label>Number of awakenings<input type="number" min="0"></label><label>Total awake time (minutes)<input type="number" min="0"></label><label>Sleep quality<select><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea></textarea></label><div class="dialog-actions"><button class="secondary">Cancel</button><button class="primary">Save</button></div>';
+  overlay.append(box);document.body.append(overlay);
+  const inputs=box.querySelectorAll('input'),dateInput=inputs[0],timeInput=inputs[1],lat=inputs[2],awak=inputs[3],awakeDur=inputs[4],quality=box.querySelector('select'),comments=box.querySelector('textarea'),cancel=box.querySelector('.secondary'),save=box.querySelector('.primary');
+  let z=new Date(d.t),p=n=>String(n).padStart(2,'0');dateInput.value=z.getFullYear()+'-'+p(z.getMonth()+1)+'-'+p(z.getDate());timeInput.value=p(z.getHours())+':'+p(z.getMinutes());lat.value=d.lat??'';awak.value=d.awak??'';awakeDur.value=d.awakeDur??'';quality.value=d.quality??'';comments.value=d.comments??'';
+  cancel.onclick=()=>overlay.remove();
+  save.onclick=async()=>{
+    if(!dateInput.value||!timeInput.value){alert('Please enter both a date and time.');return}
+    let oldDate=currentDate,newDate=dateInput.value,t=localMs(newDate,timeInput.value),v={lat:lat.value,awak:awak.value,awakeDur:awakeDur.value,quality:quality.value,comments:comments.value};
+    overlay.remove();
+    if(newDate!==oldDate){
+      x.details=(x.details||[]).filter(q=>q.id!==id);await put(x);let y=await get(newDate);y.details=y.details||[];y.details.push({id,type:'sleepDetails',t,...v});await put(y);currentDate=newDate;
+    }else{d.t=t;Object.assign(d,v);await put(x)}
+    document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();
+  };
 }
 async function deleteEntry(id,kind){
   if(!confirm('Delete this entry?'))return;if(!confirm('Are you sure you want to permanently delete this entry?'))return;
@@ -108,10 +139,9 @@ async function manualEntry(){
  function renderManual(){details.classList.toggle('hide',type.value!=='sleepDetails');if(type.value==='sleepDetails')details.innerHTML='<label>Sleep latency (minutes)<input id="mlat" type="number" min="0"></label><label>Number of awakenings<input id="mawak" type="number" min="0"></label><label>Total awake time (minutes)<input id="mawake" type="number" min="0"></label><label>Sleep quality<select id="mquality"><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea id="mcomments"></textarea></label>'}type.onchange=renderManual;renderManual();
  overlay.querySelector('#mcancel').onclick=()=>overlay.remove();overlay.querySelector('#msave').onclick=async()=>{let t=localMs(overlay.querySelector('#mdate').value,overlay.querySelector('#mtime').value),typev=type.value,date=overlay.querySelector('#mdate').value,x=await get(date);if(typev==='sleepDetails'){await addSleepDetails(x,t,{lat:overlay.querySelector('#mlat').value,awak:overlay.querySelector('#mawak').value,awakeDur:overlay.querySelector('#mawake').value,quality:overlay.querySelector('#mquality').value,comments:overlay.querySelector('#mcomments').value})}else{await record(typev,{t,date,details:null});overlay.remove();return}await put(x);currentDate=date;overlay.remove();await loadDay();renderAll()};
 }
-async function renderAll(){await renderHistory();await renderReport()}
-async function openDay(d){currentDate=d;document.querySelector('[data-tab="today"]').click();document.getElementById('dayDate').value=d;await loadDay()}
+async function renderAll(){await renderReport()}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});
-document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;
+document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
 document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
 
 document.getElementById('export').onclick=async()=>{let blob=new Blob([JSON.stringify(await all(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
