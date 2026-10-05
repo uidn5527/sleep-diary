@@ -18,7 +18,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.3</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.4</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="history">History</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button></nav>
 <main>
 <section id="today" class="view">
@@ -78,7 +78,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{document.
 document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));
 document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
 document.getElementById('saveDetails').onclick=saveDetails;
-document.getElementById('addPast').onclick=async()=>{let d=prompt('Diary date (YYYY-MM-DD)',todayDiary());if(!d)return;if(!/^\d{4}-\d\d-\d\d$/.test(d))return alert('Use YYYY-MM-DD');currentDate=d;await get(d);await loadDay();document.querySelector('[data-tab="today"]').click()};
+document.getElementById('addPast').onclick=async()=>{let i=document.createElement('input');i.type='date';i.value=todayDiary();i.style.position='fixed';i.style.opacity='0';document.body.append(i);i.onchange=async()=>{let d=i.value;i.remove();if(!d)return;currentDate=d;await get(d);await loadDay();document.querySelector('[data-tab="today"]').click()};i.click();i.showPicker?.()};
 document.getElementById('export').onclick=async()=>{let blob=new Blob([JSON.stringify(await all(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
 document.getElementById('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error();if(!confirm('Restore this backup and replace all current entries?'))return;let d=await db(),tx=d.transaction(STORE,'readwrite'),s=tx.objectStore(STORE);s.clear();data.forEach(x=>s.put(x));tx.oncomplete=async()=>{currentDate=todayDiary();await loadDay();await renderAll();alert('Backup restored.')}}catch(_){alert('Invalid backup file.')}e.target.value=''};
