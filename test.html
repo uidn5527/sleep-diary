@@ -149,9 +149,5 @@ document.getElementById('themeToggle').onclick=()=>{manualTheme=manualTheme==='a
 updateTimeTheme();setInterval(()=>{if(manualTheme==='auto')updateTimeTheme()},60000);
 async function ensure(){if(!currentDate)currentDate=todayDiary();document.getElementById('dayDate').value=currentDate;await loadDay()}
 ensure().then(renderAll);
-let manualTheme=localStorage.getItem('sleepDiaryTheme')||'auto';
-function updateTimeTheme(){let h=new Date().getHours(),autoNight=h>=20||h<6;let night=manualTheme==='night'||(manualTheme==='auto'&&autoNight);document.documentElement.classList.toggle('night',night);document.getElementById('themeColor').content=night?'#101722':'#f6f6f4';document.getElementById('themeToggle').textContent=manualTheme==='auto'?'◐':(night?'☾':'☀');document.getElementById('themeToggle').title=manualTheme==='auto'?'Automatic color scheme':(night?'Nighttime color scheme':'Daytime color scheme')}
-document.getElementById('themeToggle').onclick=()=>{manualTheme=manualTheme==='auto'?'night':manualTheme==='night'?'day':'auto';localStorage.setItem('sleepDiaryTheme',manualTheme);updateTimeTheme()};
-updateTimeTheme();setInterval(()=>{if(manualTheme==='auto')updateTimeTheme()},60000);ensure().then(renderAll);
 </script>
 </body></html>
