@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.18</title>
+<title>Sleep Diary — Test v0.19</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -18,7 +18,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.18</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.19</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button></nav>
 <main>
 <section id="today" class="view">
@@ -35,7 +35,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 <div class="panel"><h2>Recorded entries</h2><div id="events"></div><button class="secondary" id="manualEntryDiary" style="margin-top:10px;width:100%">Manual event entry</button></div>
 </section>
 
-<section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" onclick="window.print()">Print / PDF</button></div><div class="reportwrap"><table><thead><tr><th>Date</th><th>Bed</th><th>Got in bed</th><th>Latency</th><th>Awakenings</th><th>Total awake</th><th>Final awakening</th><th>Out of bed</th><th>Quality</th><th>Naps</th><th>Device</th><th>Comments</th></tr></thead><tbody id="reportBody"></tbody></table></div></div></section>
+<section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" onclick="window.print()">Print / PDF</button></div><div class="reportwrap"><table><thead><tr><th>Date</th><th>Naps you took today</th><th>Bed</th><th>Got in bed</th><th>Latency</th><th>Awakenings</th><th>Total awake</th><th>Final awakening</th><th>Out of bed</th><th>Quality</th><th>Naps</th><th>Device</th><th>Comments</th></tr></thead><tbody id="reportBody"></tbody></table></div></div></section>
 
 <section id="settings" class="view hide"><div class="panel"><h2>Data</h2><p class="muted">Entries are stored on this device using IndexedDB.</p><div class="grid"><button class="secondary" id="export">Export JSON backup</button><button class="secondary" id="importBtn">Restore JSON backup</button></div><input id="importFile" type="file" accept=".json,application/json" class="hide"><br><button class="danger" id="clear">Clear all entries</button></div><div class="panel"><h2>About</h2><p class="muted">Test version for personal sleep-diary use. The electronic report and printable report will be refined against the hospital paper diary before this becomes the official version.</p></div></section>
 </main>
@@ -131,7 +131,7 @@ function reportRows(records){
     let ev=t=>g.records.filter(r=>r.type===t).sort((a,b)=>a.t-b.t);
     let got=ev('gotInBed')[0],tryS=ev('trySleep')[0],wake=ev('wokeUp').slice(-1)[0],out=ev('outOfBed').slice(-1)[0],devOff=ev('deviceOff').slice(-1)[0],devOn=ev('deviceOn').slice(-1)[0],naps=g.records.filter(r=>r.type==='napStart').length;
     let details=g.records.filter(r=>r.type==='sleepDetails').slice(-1)[0];
-    return '<tr><td>'+g.date+'</td><td>'+ (tryS&&got?fmt(tryS.t):'—')+'</td><td>'+ (got?fmt(got.t):'—')+'</td><td>'+ (details?.lat||'—')+'</td><td>'+ (details?.awak||'—')+'</td><td>'+ (details?.awakeDur||'—')+'</td><td>'+ (wake?fmt(wake.t):'—')+'</td><td>'+ (out?fmt(out.t):'—')+'</td><td>'+ (details?.quality||'—')+'</td><td>'+naps+'</td><td>'+((devOff||devOn)?((devOff?'Off '+fmt(devOff.t):'')+(devOn?' / On '+fmt(devOn.t):'')):'—')+'</td><td>'+((details?.comments||'').replaceAll('<','&lt;'))+'</td></tr>'
+    return '<tr><td>'+g.date+'</td><td></td><td>'+ (tryS&&got?fmt(tryS.t):'—')+'</td><td>'+ (got?fmt(got.t):'—')+'</td><td>'+ (details?.lat||'—')+'</td><td>'+ (details?.awak||'—')+'</td><td>'+ (details?.awakeDur||'—')+'</td><td>'+ (wake?fmt(wake.t):'—')+'</td><td>'+ (out?fmt(out.t):'—')+'</td><td>'+ (details?.quality||'—')+'</td><td>'+naps+'</td><td>'+((devOff||devOn)?((devOff?'Off '+fmt(devOff.t):'')+(devOn?' / On '+fmt(devOn.t):'')):'—')+'</td><td>'+((details?.comments||'').replaceAll('<','&lt;'))+'</td></tr>'
   }).join('');
 }
 async function renderReport(){document.getElementById('reportBody').innerHTML=reportRows(await all())}
