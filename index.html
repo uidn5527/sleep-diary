@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.15</title>
+<title>Sleep Diary — v0.20</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -18,7 +18,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.15</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">v0.20</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button></nav>
 <main>
 <section id="today" class="view">
@@ -35,43 +35,37 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 <div class="panel"><h2>Recorded entries</h2><div id="events"></div><button class="secondary" id="manualEntryDiary" style="margin-top:10px;width:100%">Manual event entry</button></div>
 </section>
 
-<section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" onclick="window.print()">Print / PDF</button></div><div class="reportwrap"><table><thead><tr><th>Date</th><th>Bed</th><th>Got in bed</th><th>Latency</th><th>Awakenings</th><th>Total awake</th><th>Final awakening</th><th>Out of bed</th><th>Quality</th><th>Naps</th><th>Device</th><th>Comments</th></tr></thead><tbody id="reportBody"></tbody></table></div></div></section>
+<section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" id="printReport">Print / PDF</button></div><div class="reportwrap"><table><thead><tr><th>Today’s date</th><th>Naps you took today</th><th>Comments</th><th>Time you got into bed</th><th>Time you tried to go to sleep</th><th>Length of time it took to fall asleep</th><th>Number of awakenings</th><th>Total duration of awakenings</th><th>Time of final awakening</th><th>Time you got out of bed</th><th>Quality of sleep</th></tr></thead><tbody id="reportBody"></tbody></table></div></div></section>
 
 <section id="settings" class="view hide"><div class="panel"><h2>Data</h2><p class="muted">Entries are stored on this device using IndexedDB.</p><div class="grid"><button class="secondary" id="export">Export JSON backup</button><button class="secondary" id="importBtn">Restore JSON backup</button></div><input id="importFile" type="file" accept=".json,application/json" class="hide"><br><button class="danger" id="clear">Clear all entries</button></div><div class="panel"><h2>About</h2><p class="muted">Test version for personal sleep-diary use. The electronic report and printable report will be refined against the hospital paper diary before this becomes the official version.</p></div></section>
 </main>
 <script>
-const DB='sleep-diary-test', STORE='days'; let currentDate='';
+const DB='sleep-diary-test', STORE='records'; let currentDate='';
 const labels={gotInBed:'Got in bed',trySleep:'Try to sleep',wokeUp:'Woke up',outOfBed:'Out of bed',napStart:'Nap start',napEnd:'Nap end',deviceOff:'Device off',deviceOn:'Device on',sleepDetails:'Sleep details'};
-function db(){return new Promise((res,rej)=>{let r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE,{keyPath:'date'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
-async function all(){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error)})}
-async function get(date){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE).objectStore(STORE).get(date);r.onsuccess=()=>res(r.result||{date,events:[],naps:[]});r.onerror=()=>rej(r.error)})}
-async function put(x){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE,'readwrite').objectStore(STORE).put(x);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+function db(){return new Promise((res,rej)=>{let r=indexedDB.open(DB,2);r.onupgradeneeded=()=>{let d=r.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function all(){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>res((r.result||[]).sort((a,b)=>a.t-b.t));r.onerror=()=>rej(r.error)})}
+async function putRecord(x){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE,'readwrite').objectStore(STORE).put(x);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+async function deleteRecord(id){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE,'readwrite').objectStore(STORE).delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+async function replaceAll(records){let d=await db();return new Promise((res,rej)=>{let tx=d.transaction(STORE,'readwrite'),s=tx.objectStore(STORE);s.clear();records.forEach(x=>s.put(x));tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+async function recordsForDay(date){return (await all()).filter(r=>diaryForTimestamp(r.t)===date)}
 function todayDiary(){let d=new Date();if(d.getHours()<12)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10)}
 function tsInput(ms){let d=new Date(ms);let p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())}
 function fmt(ms){return new Date(ms).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
-function eventTime(){return Date.now()}
-async function ensure(){if(!currentDate)currentDate=todayDiary();document.getElementById('dayDate').value=currentDate;await loadDay()}
-async function loadDay(){let x=await get(currentDate);renderEvents(x)}
 function localMs(date,time){let [y,m,d]=date.split('-').map(Number),[hh,mm]=time.split(':').map(Number);return new Date(y,m-1,d,hh,mm).getTime()}
 function diaryForTimestamp(t){let d=new Date(t);if(d.getHours()<12)d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function reminder(type){if(type!=='gotInBed'&&type!=='outOfBed')alert('Press the button on the device!')}
 async function record(type, opts={}) {
   reminder(type);
-  let t=opts.t||Date.now(), date=opts.date||diaryForTimestamp(t), x=await get(date);
-  x.events=x.events||[];
-  const e={id:crypto.randomUUID(),type,t};
+  let t=opts.t||Date.now(), e={id:crypto.randomUUID(),type,t};
   let details=opts.details;
   if(type==='wokeUp' && details===undefined) details=await detailsDialog();
-  x.events.push(e);
-  if(type==='wokeUp' && details)await addSleepDetails(x,t,details);
-  if(type==='napStart'){x.naps=x.naps||[];x.naps.push({id:e.id,start:t,end:null})}
-  if(type==='napEnd'){x.naps=x.naps||[];let n=[...x.naps].reverse().find(n=>!n.end);if(n)n.end=t}
-  await put(x);currentDate=date;document.getElementById('dayDate').value=currentDate;await loadDay();await renderReport();
+  await putRecord(e);
+  if(type==='wokeUp' && details)await addSleepDetails(t,details);
+  currentDate=diaryForTimestamp(t);document.getElementById('dayDate').value=currentDate;await loadDay();await renderReport();
 }
-async function addSleepDetails(x,t,details){
+async function addSleepDetails(t,details){
   if(!details)return;
-  x.details=x.details||[];
-  x.details.push({id:crypto.randomUUID(),type:'sleepDetails',t,lat:details.lat,awak:details.awak,awakeDur:details.awakeDur,quality:details.quality,comments:details.comments});
+  await putRecord({id:crypto.randomUUID(),type:'sleepDetails',t,lat:details.lat,awak:details.awak,awakeDur:details.awakeDur,quality:details.quality,comments:details.comments});
 }
 function detailsDialog(){
   return new Promise(resolve=>{
@@ -81,7 +75,7 @@ function detailsDialog(){
   });
 }
 async function editEvent(id){
-  let x=await get(currentDate),e=(x.events||[]).find(e=>e.id===id);if(!e)return;
+  let e=(await all()).find(e=>e.id===id);if(!e)return;
   const overlay=document.createElement('div');overlay.className='dialog-backdrop';
   const box=document.createElement('div');box.className='dialog';
   box.innerHTML='<h2>Edit entry</h2><label>Event type<select></select></label><label>Date<input type="date"></label><label>Time<input type="time"></label><div class="dialog-actions"><button class="secondary">Cancel</button><button class="primary">Save</button></div>';
@@ -92,19 +86,11 @@ async function editEvent(id){
   cancel.onclick=()=>overlay.remove();
   save.onclick=async()=>{
     if(!dateInput.value||!timeInput.value){alert('Please enter both a date and time.');return}
-    let oldDate=currentDate,newDate=dateInput.value,t=localMs(newDate,timeInput.value),type=sel.value;
-    overlay.remove();
-    if(newDate!==oldDate){
-      x.events=x.events.filter(q=>q.id!==id);x.naps=(x.naps||[]).filter(n=>n.id!==id);await put(x);
-      let y=await get(newDate);y.events=y.events||[];y.events.push({id,type,t});
-      if(type==='napStart'){y.naps=y.naps||[];y.naps.push({id,start:t,end:null})}
-      await put(y);currentDate=newDate;
-    }else{e.t=t;e.type=type;await put(x)}
-    document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();
+    e.t=localMs(dateInput.value,timeInput.value);e.type=sel.value;await putRecord(e);currentDate=diaryForTimestamp(e.t);overlay.remove();document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();
   };
 }
 async function editDetails(id){
-  let x=await get(currentDate),d=(x.details||[]).find(q=>q.id===id);if(!d)return;
+  let d=(await all()).find(q=>q.id===id);if(!d)return;
   const overlay=document.createElement('div');overlay.className='dialog-backdrop';
   const box=document.createElement('div');box.className='dialog';
   box.innerHTML='<h2>Edit sleep details</h2><label>Date<input type="date"></label><label>Time<input type="time"></label><label>Sleep latency (minutes)<input type="number" min="0"></label><label>Number of awakenings<input type="number" min="0"></label><label>Total awake time (minutes)<input type="number" min="0"></label><label>Sleep quality<select><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea></textarea></label><div class="dialog-actions"><button class="secondary">Cancel</button><button class="primary">Save</button></div>';
@@ -114,40 +100,98 @@ async function editDetails(id){
   cancel.onclick=()=>overlay.remove();
   save.onclick=async()=>{
     if(!dateInput.value||!timeInput.value){alert('Please enter both a date and time.');return}
-    let oldDate=currentDate,newDate=dateInput.value,t=localMs(newDate,timeInput.value),v={lat:lat.value,awak:awak.value,awakeDur:awakeDur.value,quality:quality.value,comments:comments.value};
-    overlay.remove();
-    if(newDate!==oldDate){
-      x.details=(x.details||[]).filter(q=>q.id!==id);await put(x);let y=await get(newDate);y.details=y.details||[];y.details.push({id,type:'sleepDetails',t,...v});await put(y);currentDate=newDate;
-    }else{d.t=t;Object.assign(d,v);await put(x)}
-    document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();
+    d.t=localMs(dateInput.value,timeInput.value);Object.assign(d,{lat:lat.value,awak:awak.value,awakeDur:awakeDur.value,quality:quality.value,comments:comments.value});await putRecord(d);currentDate=diaryForTimestamp(d.t);overlay.remove();document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();
   };
 }
 async function deleteEntry(id,kind){
   if(!confirm('Delete this entry?'))return;if(!confirm('Are you sure you want to permanently delete this entry?'))return;
-  let x=await get(currentDate);if(kind==='event'){x.events=(x.events||[]).filter(e=>e.id!==id);x.naps=(x.naps||[]).filter(n=>n.id!==id)}else{x.details=(x.details||[]).filter(d=>d.id!==id)}await put(x);await loadDay();renderAll();
+  await deleteRecord(id);await loadDay();renderAll();
 }
-function renderEvents(x){
-  let el=document.getElementById('events'),items=[...(x.events||[]).map(e=>({...e,kind:'event'})),...(x.details||[]).map(d=>({...d,kind:'details'}))].sort((a,b)=>b.t-a.t);
-  el.innerHTML=items.length?items.map(e=>{if(e.kind==='details')return '<div class="event"><div><strong>Sleep details</strong><br><small>'+fmt(e.t)+'</small><br><small>Latency: '+(e.lat||'—')+' min · Awakenings: '+(e.awak||'—')+' · Awake: '+(e.awakeDur||'—')+' min · '+(e.quality||'No quality')+(e.comments?' · '+String(e.comments).replaceAll('<','&lt;'):'')+'</small></div><div style="display:flex;gap:6px"><button class="secondary icon-btn" aria-label="Edit sleep details" title="Edit" onclick="editDetails(\''+e.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18.8 8.7l-3.5-3.5L4 16.5zM20.7 6.8a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0-1.4 0l-1.1 1.1 3.5 3.5 1.1-1.1z"/></svg></button><button class="danger icon-btn" aria-label="Delete sleep details" title="Delete" onclick="deleteEntry(\''+e.id+'\',\'details\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9zm3 2v8h2v-8H9zm4 0v8h2v-8h-2z"/></svg></button></div></div>';return '<div class="event"><div><strong>'+labels[e.type]+'</strong><br><small>'+fmt(e.t)+'</small></div><div style="display:flex;gap:6px"><button class="secondary icon-btn" aria-label="Edit entry" title="Edit" onclick="editEvent(\''+e.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18.8 8.7l-3.5-3.5L4 16.5zM20.7 6.8a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0-1.4 0l-1.1 1.1 3.5 3.5 1.1-1.1z"/></svg></button><button class="danger icon-btn" aria-label="Delete entry" title="Delete" onclick="deleteEntry(\''+e.id+'\',\'event\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12l-1 12H7L6 9zm3 2v8h2v-8H9zm4 0v8h2v-8h-2z"/></svg></button></div></div>'}).join(''):'<p class="muted">No entries recorded.</p>'
+function renderEvents(items){
+  let el=document.getElementById('events');
+  items=[...items].sort((a,b)=>b.t-a.t);
+  el.innerHTML=items.length?items.map(e=>{if(e.type==='sleepDetails')return '<div class="event"><div><strong>Sleep details</strong><br><small>'+fmt(e.t)+'</small><br><small>Latency: '+(e.lat||'—')+' min · Awakenings: '+(e.awak||'—')+' · Awake: '+(e.awakeDur||'—')+' min · '+(e.quality||'No quality')+(e.comments?' · '+String(e.comments).replaceAll('<','&lt;'):'')+'</small></div><div style="display:flex;gap:6px"><button class="secondary icon-btn" aria-label="Edit sleep details" title="Edit" onclick="editDetails(\''+e.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18.8 8.7l-3.5-3.5-12.3 11.3zM20.7 6.8a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0-1.4 0l-1.1 1.1 3.5 3.5 2.1-1.1z"/></svg></button><button class="danger icon-btn" aria-label="Delete sleep details" title="Delete" onclick="deleteEntry(\''+e.id+'\',\'details\')\"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12L17 21H7L6 9zm3 2v8h2v-8H9zm4 0v8h2v-8h-2z"/></svg></button></div></div>';
+    return '<div class="event"><div><strong>'+labels[e.type]+'</strong><br><small>'+fmt(e.t)+'</small></div><div style="display:flex;gap:6px"><button class="secondary icon-btn" aria-label="Edit entry" title="Edit" onclick="editEvent(\''+e.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18.8 8.7l-3.5-3.5-12.3 11.3zM20.7 6.8a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0 0-1.4l-2.1-2.1-1.1 1.1 3.5 3.5 2.1-1.1z"/></svg></button><button class="danger icon-btn" aria-label="Delete entry" title="Delete" onclick="deleteEntry(\''+e.id+'\',\'event\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12L17 21H7L6 9zm3 2v8h2v-8H9zm4 0v8h2v-8h-2z"/></svg></button></div></div>'
+  }).join(''):'<p class="muted">No entries recorded.</p>'
 }
+async function loadDay(){renderEvents(await recordsForDay(currentDate))}
 async function manualEntry(){
  const overlay=document.createElement('div');overlay.className='dialog-backdrop';overlay.innerHTML='<div class="dialog"><h2>Manual entry</h2><label>Entry type<select id="mtype"><option value="gotInBed">Got in bed</option><option value="trySleep">Try to sleep</option><option value="wokeUp">Woke up</option><option value="outOfBed">Out of bed</option><option value="napStart">Nap start</option><option value="napEnd">Nap end</option><option value="deviceOff">Device off</option><option value="deviceOn">Device on</option><option value="sleepDetails">Sleep details</option></select></label><label>Date<input id="mdate" type="date" value="'+currentDate+'"></label><label>Time<input id="mtime" type="time"></label><div id="manualDetails" class="hide"></div><div class="dialog-actions"><button class="secondary" id="mcancel">Cancel</button><button class="primary" id="msave">Save</button></div></div>';document.body.append(overlay);
  const type=overlay.querySelector('#mtype'), details=overlay.querySelector('#manualDetails');
  function renderManual(){details.classList.toggle('hide',type.value!=='sleepDetails');if(type.value==='sleepDetails')details.innerHTML='<label>Sleep latency (minutes)<input id="mlat" type="number" min="0"></label><label>Number of awakenings<input id="mawak" type="number" min="0"></label><label>Total awake time (minutes)<input id="mawake" type="number" min="0"></label><label>Sleep quality<select id="mquality"><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea id="mcomments"></textarea></label>'}type.onchange=renderManual;renderManual();
- overlay.querySelector('#mcancel').onclick=()=>overlay.remove();overlay.querySelector('#msave').onclick=async()=>{let t=localMs(overlay.querySelector('#mdate').value,overlay.querySelector('#mtime').value),typev=type.value,date=diaryForTimestamp(t),x=await get(date);if(typev==='sleepDetails'){await addSleepDetails(x,t,{lat:overlay.querySelector('#mlat').value,awak:overlay.querySelector('#mawak').value,awakeDur:overlay.querySelector('#mawake').value,quality:overlay.querySelector('#mquality').value,comments:overlay.querySelector('#mcomments').value})}else{await record(typev,{t,date,details:null});overlay.remove();return}await put(x);currentDate=date;overlay.remove();await loadDay();renderAll()};
+ overlay.querySelector('#mcancel').onclick=()=>overlay.remove();
+ overlay.querySelector('#msave').onclick=async()=>{let t=localMs(overlay.querySelector('#mdate').value,overlay.querySelector('#mtime').value),typev=type.value;if(typev==='sleepDetails'){await addSleepDetails(t,{lat:overlay.querySelector('#mlat').value,awak:overlay.querySelector('#mawak').value,awakeDur:overlay.querySelector('#mawake').value,quality:overlay.querySelector('#mquality').value,comments:overlay.querySelector('#mcomments').value})}else{await record(typev,{t,details:null});overlay.remove();return}currentDate=diaryForTimestamp(t);overlay.remove();await loadDay();renderAll()};
 }
+
+function reportDate(t){let d=new Date(t);d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function sequenceEvents(records){return records.filter(r=>r.type!=='sleepDetails').sort((a,b)=>a.t-b.t)}
+function validateSequence(records){
+ const es=sequenceEvents(records);let i=0;
+ const pairTypes={deviceOff:'deviceOn',napStart:'napEnd'};
+ while(i<es.length){
+  let e=es[i];
+  if(pairTypes[e.type]){
+   let want=pairTypes[e.type],next=es[i+1];
+   if(!next||next.type!==want){return {event:e,before:es[i-1]||null,after:next||null,reason:'This pair must be immediately followed by “'+labels[want]+'”.'}}
+   i+=2;continue;
+  }
+  if(e.type==='gotInBed'){
+   const wanted=['trySleep','wokeUp','outOfBed'];
+   for(let j=0;j<wanted.length;j++){
+    let n=es[i+j+1];
+    if(!n)return null;
+    if(n.type!==wanted[j])return {event:n,before:es[i+j]||null,after:es[i+j+2]||null,reason:'After “'+labels[es[i+j]?.type||e.type]+'”, the next event must be “'+labels[wanted[j]]+'”.'};
+   }
+   i+=4;continue;
+  }
+  return {event:e,before:es[i-1]||null,after:es[i+1]||null,reason:'This event does not fit the required sequence. Device and nap pairs must come first, followed by got in bed → try to sleep → woke up → out of bed.'};
+ }
+ return null;
+}
+function eventSummary(e){return e?labels[e.type]+' — '+fmt(e.t):'None'}
+function showSequenceProblem(problem){
+ const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+ const e=problem.event;
+ overlay.innerHTML='<div class="dialog"><h2>Event sequence needs attention</h2><p>'+problem.reason+'</p><p><strong>Event before:</strong> '+eventSummary(problem.before)+'</p><p><strong>Suspect event:</strong> '+eventSummary(e)+'</p><p><strong>Event after:</strong> '+eventSummary(problem.after)+'</p><p class="muted">Edit or delete the suspect event, then check the sequence again before generating the report.</p><div class="dialog-actions"><button class="secondary" id="seqClose">Close</button><button class="danger" id="seqDelete">Delete event</button><button class="primary" id="seqEdit">Edit event</button></div></div>';
+ document.body.append(overlay);
+ overlay.querySelector('#seqClose').onclick=()=>overlay.remove();
+ overlay.querySelector('#seqEdit').onclick=()=>{overlay.remove();if(e) e.type==='sleepDetails'?editDetails(e.id):editEvent(e.id)};
+ overlay.querySelector('#seqDelete').onclick=async()=>{if(!e)return;overlay.remove();await deleteRecord(e.id);await loadDay();await renderAll();await openReportIfValid()};
+}
+function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function clock(t){return t?new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'—'}
+function elapsed(a,b){if(!a||!b)return '—';let n=Math.round((b.t-a.t)/60000);return n<0?'—':n+' min'}
+function buildReportRows(records){
+ const es=sequenceEvents(records), details=records.filter(r=>r.type==='sleepDetails').sort((a,b)=>a.t-b.t), periods=[];
+ let i=0,pendingPairs=[];
+ while(i<es.length){
+  if(es[i].type==='deviceOff'||es[i].type==='napStart'){pendingPairs.push([es[i],es[i+1]]);i+=2;continue}
+  if(es[i].type!=='gotInBed'){i++;continue}
+  const got=es[i],tryS=es[i+1]?.type==='trySleep'?es[i+1]:null,wake=es[i+2]?.type==='wokeUp'?es[i+2]:null,out=es[i+3]?.type==='outOfBed'?es[i+3]:null,td=wake?reportDate(wake.t):'—';
+  const periodPairs=pendingPairs;pendingPairs=[];
+  const periodDetails=wake?(details.filter(d=>Math.abs(d.t-wake.t)<60000).slice(-1)[0]||details.filter(d=>reportDate(d.t)===td).slice(-1)[0]):null;
+  const naps=periodPairs.filter(p=>p[0].type==='napStart').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ')||'—';
+  const device=periodPairs.filter(p=>p[0].type==='deviceOff').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ');
+  periods.push({td,naps,comments:[device?'Device off/on: '+device:'',periodDetails?.comments||''].filter(Boolean).join(' | ')||'—',got,tryS,wake,out,details:periodDetails});
+  i+=1+(tryS?1:0)+(wake?1:0)+(out?1:0);
+ }
+ return periods.map(p=>'<tr><td>'+p.td+'</td><td>'+esc(p.naps)+'</td><td>'+esc(p.comments)+'</td><td>'+clock(p.got?.t)+'</td><td>'+clock(p.tryS?.t)+'</td><td>'+esc(p.details?.lat!==undefined&&p.details.lat!==''?p.details.lat+' min':'—')+'</td><td>'+esc(p.details?.awak||'—')+'</td><td>'+esc(p.details?.awakeDur!==undefined&&p.details.awakeDur!==''?p.details.awakeDur+' min':'—')+'</td><td>'+clock(p.wake?.t)+'</td><td>'+clock(p.out?.t)+'</td><td>'+esc(p.details?.quality||'—')+'</td></tr>').join('');
+}
+async function renderReport(){const records=await all();const problem=validateSequence(records);if(problem){document.getElementById('reportBody').innerHTML='';return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
 async function renderAll(){await renderReport()}
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});
+async function openReportIfValid(){const records=await all(),problem=validateSequence(records);if(problem){showSequenceProblem(problem);return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});document.getElementById('printReport').onclick=async()=>{if(await openReportIfValid())window.print()};
 document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
 document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
-
-document.getElementById('export').onclick=async()=>{let blob=new Blob([JSON.stringify(await all(),null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('export').onclick=async()=>{let data={schemaVersion:2,records:await all()},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-v2-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
 document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
-document.getElementById('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());if(!Array.isArray(data))throw Error();if(!confirm('Restore this backup and replace all current entries?'))return;let d=await db(),tx=d.transaction(STORE,'readwrite'),s=tx.objectStore(STORE);s.clear();data.forEach(x=>s.put(x));tx.oncomplete=async()=>{currentDate=todayDiary();await loadDay();await renderAll();alert('Backup restored.')}}catch(_){alert('Invalid backup file.')}e.target.value=''};
-document.getElementById('clear').onclick=async()=>{if(!confirm('Clear ALL sleep-diary entries?'))return;if(!confirm('This cannot be undone unless you have a backup. Clear everything?'))return;let d=await db(),r=d.transaction(STORE,'readwrite').objectStore(STORE).clear();r.onsuccess=async()=>{currentDate=todayDiary();await loadDay();await renderAll();alert('All entries cleared.')}};
+document.getElementById('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());let records;if(data&&data.schemaVersion===2&&Array.isArray(data.records)){records=data.records}else if(Array.isArray(data)){records=[];data.forEach(day=>{(day.events||[]).forEach(r=>records.push({...r}));(day.details||[]).forEach(r=>records.push({...r}));});records.sort((a,b)=>a.t-b.t)}else throw Error();if(!records.every(r=>r&&r.id&&r.type&&Number.isFinite(Number(r.t))))throw Error();if(!confirm('Restore this backup and replace all current entries?'))return;await replaceAll(records);currentDate=todayDiary();await loadDay();await renderAll();alert('Backup restored.')}catch(_){alert('Invalid or unsupported backup file.')}e.target.value=''};
+document.getElementById('clear').onclick=async()=>{if(!confirm('Clear ALL sleep-diary entries?'))return;if(!confirm('This cannot be undone unless you have a backup. Clear everything?'))return;await replaceAll([]);currentDate=todayDiary();await loadDay();await renderAll();alert('All entries cleared.')};
 let manualTheme=localStorage.getItem('sleepDiaryTheme')||'auto';
 function updateTimeTheme(){let h=new Date().getHours(),autoNight=h>=20||h<6;let night=manualTheme==='night'||(manualTheme==='auto'&&autoNight);document.documentElement.classList.toggle('night',night);document.getElementById('themeColor').content=night?'#101722':'#f6f6f4';document.getElementById('themeToggle').textContent=manualTheme==='auto'?'◐':(night?'☾':'☀');document.getElementById('themeToggle').title=manualTheme==='auto'?'Automatic color scheme':(night?'Nighttime color scheme':'Daytime color scheme')}
 document.getElementById('themeToggle').onclick=()=>{manualTheme=manualTheme==='auto'?'night':manualTheme==='night'?'day':'auto';localStorage.setItem('sleepDiaryTheme',manualTheme);updateTimeTheme()};
-updateTimeTheme();setInterval(()=>{if(manualTheme==='auto')updateTimeTheme()},60000);ensure().then(renderAll);
+updateTimeTheme();setInterval(()=>{if(manualTheme==='auto')updateTimeTheme()},60000);
+async function ensure(){if(!currentDate)currentDate=todayDiary();document.getElementById('dayDate').value=currentDate;await loadDay()}
+ensure().then(renderAll);
 </script>
 </body></html>
