@@ -162,16 +162,15 @@ function clock(t){return t?new Date(t).toLocaleTimeString([], {hour:'numeric',mi
 function elapsed(a,b){if(!a||!b)return '—';let n=Math.round((b.t-a.t)/60000);return n<0?'—':n+' min'}
 function buildReportRows(records){
  const es=sequenceEvents(records), details=records.filter(r=>r.type==='sleepDetails').sort((a,b)=>a.t-b.t), periods=[];
- let i=0;
+ let i=0,pendingPairs=[];
  while(i<es.length){
-  if(es[i].type==='deviceOff'||es[i].type==='napStart'){i+=2;continue}
+  if(es[i].type==='deviceOff'||es[i].type==='napStart'){pendingPairs.push([es[i],es[i+1]]);i+=2;continue}
   if(es[i].type!=='gotInBed'){i++;continue}
   const got=es[i],tryS=es[i+1],wake=es[i+2],out=es[i+3],td=reportDate(wake.t);
-  const before=es.slice(0,i), pairs=[];let j=0;
-  while(j<before.length){let a=before[j],b=before[j+1];if((a.type==='deviceOff'&&b?.type==='deviceOn')||(a.type==='napStart'&&b?.type==='napEnd')){pairs.push([a,b]);j+=2}else j++}
+  const periodPairs=pendingPairs;pendingPairs=[];
   const periodDetails=details.filter(d=>Math.abs(d.t-wake.t)<60000).slice(-1)[0]||details.filter(d=>reportDate(d.t)===td).slice(-1)[0];
-  const naps=pairs.filter(p=>p[0].type==='napStart').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ')||'—';
-  const device=pairs.filter(p=>p[0].type==='deviceOff').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ');
+  const naps=periodPairs.filter(p=>p[0].type==='napStart').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ')||'—';
+  const device=periodPairs.filter(p=>p[0].type==='deviceOff').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ');
   periods.push({td,naps,comments:[device?'Device off/on: '+device:'',periodDetails?.comments||''].filter(Boolean).join(' | ')||'—',got,tryS,wake,out,details:periodDetails});
   i+=4;
  }
