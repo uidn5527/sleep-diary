@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.23</title>
+<title>Sleep Diary — Test v0.24</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -55,7 +55,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.23</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.24</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button></nav>
 <main>
 <section id="today" class="view">
@@ -169,7 +169,8 @@ function validateSequence(records){
   let e=es[i];
   if(pairTypes[e.type]){
    let want=pairTypes[e.type],next=es[i+1];
-   if(!next||next.type!==want){return {event:e,before:es[i-1]||null,after:next||null,reason:'This pair must be immediately followed by “'+labels[want]+'”.'}}
+   if(!next)return null;
+   if(next.type!==want){return {event:e,before:es[i-1]||null,after:next,reason:'This pair must be immediately followed by “'+labels[want]+'”.'}}
    i+=2;continue;
   }
   if(e.type==='gotInBed'){
@@ -202,15 +203,21 @@ function buildReportRows(records){
  const es=sequenceEvents(records), details=records.filter(r=>r.type==='sleepDetails').sort((a,b)=>a.t-b.t), periods=[];
  let i=0,pendingPairs=[];
  while(i<es.length){
-  if(es[i].type==='deviceOff'||es[i].type==='napStart'){pendingPairs.push([es[i],es[i+1]]);i+=2;continue}
+  if(es[i].type==='deviceOff'||es[i].type==='napStart'){const next=es[i+1];pendingPairs.push([es[i],next||null]);i+=next?2:1;continue}
   if(es[i].type!=='gotInBed'){i++;continue}
   const got=es[i],tryS=es[i+1]?.type==='trySleep'?es[i+1]:null,wake=es[i+2]?.type==='wokeUp'?es[i+2]:null,out=es[i+3]?.type==='outOfBed'?es[i+3]:null,td=wake?reportDate(wake.t):'—';
   const periodPairs=pendingPairs;pendingPairs=[];
   const periodDetails=wake?(details.filter(d=>Math.abs(d.t-wake.t)<60000).slice(-1)[0]||details.filter(d=>reportDate(d.t)===td).slice(-1)[0]):null;
-  const naps=periodPairs.filter(p=>p[0].type==='napStart').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ')||'—';
-  const device=periodPairs.filter(p=>p[0].type==='deviceOff').map(p=>clock(p[0].t)+'–'+clock(p[1].t)).join('; ');
+  const naps=periodPairs.filter(p=>p[0].type==='napStart').map(p=>clock(p[0].t)+'–'+clock(p[1]?.t)).join('; ')||'—';
+  const device=periodPairs.filter(p=>p[0].type==='deviceOff').map(p=>clock(p[0].t)+'–'+clock(p[1]?.t)).join('; ');
   periods.push({td,naps,comments:[device?'Device off/on: '+device:'',periodDetails?.comments||''].filter(Boolean).join(' | ')||'—',got,tryS,wake,out,details:periodDetails});
   i+=1+(tryS?1:0)+(wake?1:0)+(out?1:0);
+ }
+ if(pendingPairs.length){
+  const trailing=pendingPairs;
+  const naps=trailing.filter(p=>p[0].type==='napStart').map(p=>clock(p[0].t)+'–'+clock(p[1]?.t)).join('; ')||'—';
+  const device=trailing.filter(p=>p[0].type==='deviceOff').map(p=>clock(p[0].t)+'–'+clock(p[1]?.t)).join('; ');
+  periods.push({td:reportDate(trailing[trailing.length-1][0].t),naps,comments:device?'Device off/on: '+device:'—',got:null,tryS:null,wake:null,out:null,details:null});
  }
  const qualityOptions=['Very poor','Poor','Fair','Good','Very good'];
  return periods.map(p=>{
