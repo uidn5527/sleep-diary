@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.29</title>
+<title>Sleep Diary — Test v0.30</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -16,6 +16,17 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 @media(min-width:650px){.grid{grid-template-columns:repeat(3,1fr)}.event-group{grid-template-columns:repeat(3,1fr)}.event-group.nap,.event-group.device{grid-template-columns:repeat(2,1fr)}}
 /* Print layout modeled on the supplied hospital diary form */
 .print-heading{display:none}.print-repeat-heading{display:none}.print-pages{display:none}
+.print-page{width:10.4in;font-family:"Times New Roman",Times,serif;color:#111;line-height:1.12}
+.print-page-title{font-family:Arial,Helvetica,sans-serif;font-size:15pt;font-weight:700;line-height:1.08;text-transform:uppercase;text-decoration:underline;margin:0 0 .08in;color:#111}
+.print-page-instructions{font-family:Arial,Helvetica,sans-serif;font-size:9pt;line-height:1.15;font-weight:400;margin:0 0 2pt;color:#111}
+.print-page table{width:100%;table-layout:fixed;border-collapse:collapse;border-spacing:0;font-size:8pt;line-height:1.12}
+.print-page th,.print-page td{border:.65pt solid #222;padding:3pt 3pt 2pt;vertical-align:top;text-align:left;font-weight:400;overflow-wrap:anywhere;word-break:normal;background:#fff;color:#111}
+.print-page th{height:.62in;background:#e5e5e5}
+.print-page tbody td{font-size:6.4pt;line-height:1.08;padding:2pt 2pt 1pt}
+.print-page tbody td:nth-child(2),.print-page tbody td:nth-child(3){font-size:6.1pt;line-height:1.05}
+.print-page .quality-options{font-size:5.8pt;line-height:1.04;white-space:nowrap}
+.print-page .quality-option{display:block}
+.print-page .quality-mark{display:inline-block;width:7pt;font-weight:700}
 @media print{
  @page{size:letter landscape;margin:0.28in 0.30in 0.30in}
  html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important;font-family:"Times New Roman",Times,serif!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -69,7 +80,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.29</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.30</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
