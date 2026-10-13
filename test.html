@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.32</title>
+<title>Sleep Diary — Test v0.33</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -96,7 +96,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.32</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.33</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
@@ -300,6 +300,56 @@ function buildPrintPages(){
  document.body.appendChild(measure);
  const pages=[];
  const code39={0:'nnnwwnwnn',1:'wnnwnnnnw',2:'nnwwnnnnw',3:'wnwwnnnnn',4:'nnnwwnnnw',5:'wnnwwnnnn',6:'nnwwwnnnn',7:'nnnwnnwnw',8:'wnnwnnwnn',9:'nnwwnnwnn',A:'wnnnnwnnw',B:'nnwnnwnnw',C:'wnwnnwnnn',D:'nnnnwwnnw',E:'wnnnwwnnn',F:'nnwnwwnnn',G:'nnnnnwwnw',H:'wnnnnwwnn',I:'nnwnnwwnn',J:'nnnnwwwnn',K:'wnnnnnnww',L:'nnwnnnnww',M:'wnwnnnnwn',N:'nnnnwnnww',O:'wnnnwnnwn',P:'nnwnwnnwn',Q:'nnnnnnwww',R:'wnnnnnwwn',S:'nnwnnnwwn',T:'nnnnwnwwn',U:'wwnnnnnwn',V:'nwwnnnnwn',W:'wwwnnnnnn',X:'nwnnwnnwn',Y:'wwn nwnnnn'.replaceAll(' ',''),Z:'nwwnwnnnn','-':'nwnnnnwnw','.':'wwnnnwnnn',' ':'nwwnnnwnn','
+  const clone=row.cloneNode(true);
+  current.tbody.appendChild(clone);
+  if(current.page.getBoundingClientRect().height>pageHeight && current.tbody.children.length>1){
+   current.tbody.removeChild(clone);
+   pages.push(current.page);
+   current=makePage(measure);
+   current.page.querySelectorAll('.code39-barcode').forEach(drawCode39);
+   current.tbody.appendChild(clone);
+  }
+ });
+ pages.push(current.page);
+ pages.forEach((page,index)=>{page.remove();host.appendChild(page);page.querySelectorAll('.code39-barcode').forEach(drawCode39);});
+ measure.remove();
+}
+async function renderReport(){const records=await all();const problem=validateSequence(records);if(problem){document.getElementById('reportBody').innerHTML='';return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
+async function renderAll(){await renderReport()}
+async function openReportIfValid(){const records=await all(),problem=validateSequence(records);if(problem){showSequenceProblem(problem);return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});document.getElementById('printReport').onclick=async()=>{if(await openReportIfValid()){buildPrintPages();window.print()}};
+document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
+document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
+document.getElementById('export').onclick=async()=>{let data={schemaVersion:2,records:await all()},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-v2-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());let records;if(data&&data.schemaVersion===2&&Array.isArray(data.records)){records=data.records}else if(Array.isArray(data)){records=[];data.forEach(day=>{(day.events||[]).forEach(r=>records.push({...r}));(day.details||[]).forEach(r=>records.push({...r}));});records.sort((a,b)=>a.t-b.t)}else throw Error();if(!records.every(r=>r&&r.id&&r.type&&Number.isFinite(Number(r.t))))throw Error();if(!confirm('Restore this backup and replace all current entries?'))return;await replaceAll(records);currentDate=todayDiary();await loadDay();await renderAll();alert('Backup restored.')}catch(_){alert('Invalid or unsupported backup file.')}e.target.value=''};
+document.getElementById('clear').onclick=async()=>{if(!confirm('Clear ALL sleep-diary entries?'))return;if(!confirm('This cannot be undone unless you have a backup. Clear everything?'))return;await replaceAll([]);currentDate=todayDiary();await loadDay();await renderAll();alert('All entries cleared.')};
+let manualTheme=localStorage.getItem('sleepDiaryTheme')||'auto';
+function updateTimeTheme(){let h=new Date().getHours(),autoNight=h>=20||h<6;let night=manualTheme==='night'||(manualTheme==='auto'&&autoNight);document.documentElement.classList.toggle('night',night);document.getElementById('themeColor').content=night?'#101722':'#f6f6f4';document.getElementById('themeToggle').textContent=manualTheme==='auto'?'◐':(night?'☾':'☀');document.getElementById('themeToggle').title=manualTheme==='auto'?'Automatic color scheme':(night?'Nighttime color scheme':'Daytime color scheme')}
+document.getElementById('themeToggle').onclick=()=>{manualTheme=manualTheme==='auto'?'night':manualTheme==='night'?'day':'auto';localStorage.setItem('sleepDiaryTheme',manualTheme);updateTimeTheme()};
+updateTimeTheme();setInterval(()=>{if(manualTheme==='auto')updateTimeTheme()},60000);
+async function ensure(){if(!currentDate)currentDate=todayDiary();document.getElementById('dayDate').value=currentDate;await loadDay()}
+ensure().then(renderAll);
+</script>
+</body></html>:'nwnwnwnnn','/':'nwnwnnnwn','+':'nwnnnwnwn','%':'nnnwnwnwn','*':'nwnnwnwnn'};
+ const drawCode39=svg=>{
+  const value='*414695818*',wide=3,unit=1,gap=1;
+  let x=0;const bars=[];
+  for(let ci=0;ci<value.length;ci++){
+   const pattern=code39[value[ci]];
+   if(!pattern)continue;
+   for(let j=0;j<pattern.length;j++){
+    const w=pattern[j]==='w'?wide:unit;
+    if(j%2===0)bars.push('<rect x="'+x+'" y="0" width="'+w+'" height="24" fill="#111"/>');
+    x+=w;
+   }
+   if(ci<value.length-1)x+=gap;
+  }
+  svg.setAttribute('viewBox','0 0 '+x+' 24');
+  svg.setAttribute('preserveAspectRatio','none');
+  svg.innerHTML=bars.join('');
+ };
+ current.page.querySelectorAll('.code39-barcode').forEach(drawCode39);
  rows.forEach(row=>{
   const clone=row.cloneNode(true);
   current.tbody.appendChild(clone);
