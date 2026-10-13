@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.30</title>
+<title>Sleep Diary — Test v0.31</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -16,7 +16,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 @media(min-width:650px){.grid{grid-template-columns:repeat(3,1fr)}.event-group{grid-template-columns:repeat(3,1fr)}.event-group.nap,.event-group.device{grid-template-columns:repeat(2,1fr)}}
 /* Print layout modeled on the supplied hospital diary form */
 .print-heading{display:none}.print-repeat-heading{display:none}.print-pages{display:none}
-.print-page{width:10.4in;font-family:"Times New Roman",Times,serif;color:#111;line-height:1.12}
+.print-page{position:relative;box-sizing:border-box;min-height:7.92in;width:10.4in;padding-bottom:1.02in;font-family:"Times New Roman",Times,serif;color:#111;line-height:1.12}
 .print-page-title{font-family:Arial,Helvetica,sans-serif;font-size:15pt;font-weight:700;line-height:1.08;text-transform:uppercase;text-decoration:underline;margin:0 0 .08in;color:#111}
 .print-page-instructions{font-family:Arial,Helvetica,sans-serif;font-size:9pt;line-height:1.15;font-weight:400;margin:0 0 2pt;color:#111}
 .print-page table{width:100%;table-layout:fixed;border-collapse:collapse;border-spacing:0;font-size:8pt;line-height:1.12}
@@ -27,6 +27,22 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 .print-page .quality-options{font-size:5.8pt;line-height:1.04;white-space:nowrap}
 .print-page .quality-option{display:block}
 .print-page .quality-mark{display:inline-block;width:7pt;font-weight:700}
+.print-label{position:absolute;right:.04in;bottom:.06in;width:2.65in;height:.91in;border:1px solid #aaa;border-radius:.12in;padding:.045in .07in;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.05;box-sizing:border-box}
+.print-label .label-top{display:flex;justify-content:space-between;gap:.06in;font-size:8.2pt;font-weight:400;white-space:nowrap}
+.print-label .label-study{font-size:8.4pt;font-weight:400;white-space:nowrap;margin-top:.025in}
+.print-label .label-name{font-size:9.5pt;font-weight:700;white-space:nowrap;margin-top:.01in}
+.print-label .label-pref{font-size:8.2pt;font-weight:400;white-space:nowrap}
+.print-label .label-demographics{display:flex;justify-content:space-between;gap:.04in;font-size:8.2pt;white-space:nowrap;margin-top:.025in}
+.print-label .label-barcode-row{display:flex;align-items:flex-start;gap:.04in;margin-top:.015in}
+.print-label .label-csn{font-size:8.1pt;white-space:nowrap}
+.print-label .label-barcode-wrap{flex:1;min-width:0;text-align:center}
+.print-label svg{display:block;width:100%;height:.22in}
+.print-label .label-barcode-number{font-size:8.2pt;line-height:1;text-align:center;letter-spacing:.5pt;margin-top:0}
+.print-measure .print-page{min-height:0!important;padding-bottom:0!important}
+@media print{
+ .print-page{min-height:7.92in!important;height:7.92in!important;overflow:hidden!important;padding-bottom:1.02in!important}
+ .print-label{position:absolute!important;right:.04in!important;bottom:.06in!important}
+}
 @media print{
  @page{size:letter landscape;margin:0.28in 0.30in 0.30in}
  html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important;font-family:"Times New Roman",Times,serif!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -80,7 +96,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.30</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.31</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
@@ -263,7 +279,7 @@ function buildPrintPages(){
  host.innerHTML='';
  const rows=Array.from(source.querySelectorAll('tbody tr'));
  const headers=Array.from(source.querySelectorAll('thead tr:last-child th')).map(th=>th.textContent);
- const pageHeight=7.92*96;
+ const pageHeight=7.92*96-1.10*96;
  const makePage=(container)=>{
   const page=document.createElement('section');page.className='print-page';
   const title=document.createElement('div');title.className='print-page-title';title.textContent='PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST';page.appendChild(title);
@@ -273,14 +289,68 @@ function buildPrintPages(){
   headers.forEach(label=>{const th=document.createElement('th');th.textContent=label;tr.appendChild(th)});
   thead.appendChild(tr);table.appendChild(thead);
   const tbody=document.createElement('tbody');table.appendChild(tbody);page.appendChild(table);
+  const label=document.createElement('div');label.className='print-label';
+  label.innerHTML='<div class="label-top"><span>DOS: 10/5/2026</span><span>SLEEPLAB-DF</span></div><div class="label-study">DFSLEEPACT DF SLEEP ACTIGRAPHY</div><div class="label-name">Friedhofer, Michel</div><div class="label-pref">Pref Name:</div><div class="label-demographics"><span>MRN: 101098093</span><span>DOB: 2/22/1977</span><span>M</span><span>49yrs</span></div><div class="label-barcode-row"><span class="label-csn">CSN:</span><div class="label-barcode-wrap"><svg class="code39-barcode" viewBox="0 0 200 28" role="img" aria-label="Code 39 barcode encoding 414695818"></svg><div class="label-barcode-number">414695818</div></div></div>';
+  page.appendChild(label);
   container.appendChild(page);
   return {page,tbody};
  };
  const measure=document.createElement('div');
- measure.style.cssText='position:absolute;left:-30000px;top:0;width:10.4in;height:auto;visibility:hidden;display:block;overflow:visible;';
+ measure.className='print-measure';measure.style.cssText='position:absolute;left:-30000px;top:0;width:10.4in;height:auto;visibility:hidden;display:block;overflow:visible;';
  document.body.appendChild(measure);
  const pages=[];
+ const code39={0:'nnnwwnwnn',1:'wnnwnnnnw',2:'nnwwnnnnw',3:'wnwwnnnnn',4:'nnnwwnnnw',5:'wnnwwnnnn',6:'nnwwwnnnn',7:'nnnwnnwnw',8:'wnnwnnwnn',9:'nnwwnnwnn',A:'wnnnnwnnw',B:'nnwnnwnnw',C:'wnwnnwnnn',D:'nnnnwwnnw',E:'wnnnwwnnn',F:'nnwnwwnnn',G:'nnnnnwwnw',H:'wnnnnwwnn',I:'nnwnnwwnn',J:'nnnnwwwnn',K:'wnnnnnnww',L:'nnwnnnnww',M:'wnwnnnnwn',N:'nnnnwnnww',O:'wnnnwnnwn',P:'nnwnwnnwn',Q:'nnnnnnwww',R:'wnnnnnwwn',S:'nnwnnnwwn',T:'nnnnwnwwn',U:'wwnnnnnwn',V:'nwwnnnnwn',W:'wwwnnnnnn',X:'nwnnwnnwn',Y:'wwn nwnnnn'.replaceAll(' ',''),Z:'nwwnwnnnn','-':'nwnnnnwnw','.':'wwnnnwnnn',' ':'nwwnnnwnn','
+ rows.forEach(row=>{
+  const clone=row.cloneNode(true);
+  current.tbody.appendChild(clone);
+  if(current.page.getBoundingClientRect().height>pageHeight && current.tbody.children.length>1){
+   current.tbody.removeChild(clone);
+   pages.push(current.page);
+   current=makePage(measure);
+   current.page.querySelectorAll('.code39-barcode').forEach(drawCode39);
+   current.tbody.appendChild(clone);
+  }
+ });
+ pages.push(current.page);
+ pages.forEach((page,index)=>{page.remove();host.appendChild(page);page.querySelectorAll('.code39-barcode').forEach(drawCode39);});
+ measure.remove();
+}
+async function renderReport(){const records=await all();const problem=validateSequence(records);if(problem){document.getElementById('reportBody').innerHTML='';return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
+async function renderAll(){await renderReport()}
+async function openReportIfValid(){const records=await all(),problem=validateSequence(records);if(problem){showSequenceProblem(problem);return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});document.getElementById('printReport').onclick=async()=>{if(await openReportIfValid()){buildPrintPages();window.print()}};
+document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
+document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
+document.getElementById('export').onclick=async()=>{let data={schemaVersion:2,records:await all()},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-v2-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());let records;if(data&&data.schemaVersion===2&&Array.isArray(data.records)){records=data.records}else if(Array.isArray(data)){records=[];data.forEach(day=>{(day.events||[]).forEach(r=>records.push({...r}));(day.details||[]).forEach(r=>records.push({...r}));});records.sort((a,b)=>a.t-b.t)}else throw Error();if(!records.every(r=>r&&r.id&&r.type&&Number.isFinite(Number(r.t))))throw Error();if(!confirm('Restore this backup and replace all current entries?'))return;await replaceAll(records);currentDate=todayDiary();await loadDay();await renderAll();alert('Backup restored.')}catch(_){alert('Invalid or unsupported backup file.')}e.target.value=''};
+document.getElementById('clear').onclick=async()=>{if(!confirm('Clear ALL sleep-diary entries?'))return;if(!confirm('This cannot be undone unless you have a backup. Clear everything?'))return;await replaceAll([]);currentDate=todayDiary();await loadDay();await renderAll();alert('All entries cleared.')};
+let manualTheme=localStorage.getItem('sleepDiaryTheme')||'auto';
+function updateTimeTheme(){let h=new Date().getHours(),autoNight=h>=20||h<6;let night=manualTheme==='night'||(manualTheme==='auto'&&autoNight);document.documentElement.classList.toggle('night',night);document.getElementById('themeColor').content=night?'#101722':'#f6f6f4';document.getElementById('themeToggle').textContent=manualTheme==='auto'?'◐':(night?'☾':'☀');document.getElementById('themeToggle').title=manualTheme==='auto'?'Automatic color scheme':(night?'Nighttime color scheme':'Daytime color scheme')}
+document.getElementById('themeToggle').onclick=()=>{manualTheme=manualTheme==='auto'?'night':manualTheme==='night'?'day':'auto';localStorage.setItem('sleepDiaryTheme',manualTheme);updateTimeTheme()};
+updateTimeTheme();setInterval(()=>{if(manualTheme==='auto')updateTimeTheme()},60000);
+async function ensure(){if(!currentDate)currentDate=todayDiary();document.getElementById('dayDate').value=currentDate;await loadDay()}
+ensure().then(renderAll);
+</script>
+</body></html>:'nwnwnwnnn','/':'nwnwnnnwn','+':'nwnnnwnwn','%':'nnnwnwnwn','*':'nwnnwnwnn'};
+ const drawCode39=svg=>{
+  const value='*414695818*', ns=1, wide=3, gap=1;
+  let x=0;const bars=[];
+  for(let ci=0;ci<value.length;ci++){
+   const pattern=code39[value[ci]];
+   if(!pattern)continue;
+   for(let j=0;j<pattern.length;j++){
+    const w=pattern[j]==='w'?wide:ns;
+    if(j%2===0)bars.push('<rect x="'+x+'" y="0" width="'+w+'" height="24" fill="#111"/>');
+    x+=w;
+   }
+   if(ci<value.length-1)x+=gap;
+  }
+  svg.setAttribute('viewBox','0 0 '+x+' 24');svg.setAttribute('preserveAspectRatio','none');svg.innerHTML=bars.join('');
+ };
+ const pages=[];
  let current=makePage(measure);
+ current.page.querySelectorAll('.code39-barcode').forEach(drawCode39);
  rows.forEach(row=>{
   const clone=row.cloneNode(true);
   current.tbody.appendChild(clone);
