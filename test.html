@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.26</title>
+<title>Sleep Diary — Test v0.27</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -15,7 +15,7 @@ button.secondary,button.primary,button.danger{border:1px solid #bbb;border-radiu
 table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #bbb;padding:6px;vertical-align:top;text-align:left}th{background:#eee}.reportwrap{overflow:auto}.hide{display:none}.dialog-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding:14px;z-index:20}.dialog{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.25)}.night .dialog{background:var(--surface);color:var(--text)}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap}.dialog label{margin-top:10px}.saved{font-size:12px;color:#666;text-align:right;margin-top:7px}
 @media(min-width:650px){.grid{grid-template-columns:repeat(3,1fr)}.event-group{grid-template-columns:repeat(3,1fr)}.event-group.nap,.event-group.device{grid-template-columns:repeat(2,1fr)}}
 /* Print layout modeled on the supplied hospital diary form */
-.print-heading{display:none}.print-repeat-heading{display:none}
+.print-heading{display:none}.print-repeat-heading{display:none}.print-pages{display:none}
 @media print{
  @page{size:letter landscape;margin:0.28in 0.30in 0.30in}
  html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important;font-family:"Times New Roman",Times,serif!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -57,7 +57,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.26</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.27</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
@@ -74,7 +74,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 <div class="panel"><h2>Recorded entries</h2><div id="events"></div><button class="secondary" id="manualEntryDiary" style="margin-top:10px;width:100%">Manual event entry</button></div>
 </section>
 
-<section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" id="printReport">Print / PDF</button></div><div class="print-heading"><h1>PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</h1><p>Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p>Please record any naps in the comments section.</p></div><div class="reportwrap"><table><thead><tr class="print-repeat-heading"><th colspan="11"><div class="repeat-title">PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</div><p class="repeat-instructions">Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p class="repeat-instructions">Please record any naps in the comments section.</p></th></tr><tr><th>Today’s date</th><th>Naps you took today</th><th>Comments</th><th>Time you got into bed</th><th>Time you tried to go to sleep</th><th>Length of time it took to fall asleep</th><th>Number of awakenings</th><th>Total duration of awakenings</th><th>Time of final awakening</th><th>Time you got out of bed</th><th>Quality of sleep</th></tr></thead><tbody id="reportBody"></tbody></table></div></div></section>
+<section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" id="printReport">Print / PDF</button></div><div class="print-heading"><h1>PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</h1><p>Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p>Please record any naps in the comments section.</p></div><div class="reportwrap"><table><thead><tr class="print-repeat-heading"><th colspan="11"><div class="repeat-title">PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</div><p class="repeat-instructions">Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p class="repeat-instructions">Please record any naps in the comments section.</p></th></tr><tr><th>Today’s date</th><th>Naps you took today</th><th>Comments</th><th>Time you got into bed</th><th>Time you tried to go to sleep</th><th>Length of time it took to fall asleep</th><th>Number of awakenings</th><th>Total duration of awakenings</th><th>Time of final awakening</th><th>Time you got out of bed</th><th>Quality of sleep</th></tr></thead><tbody id="reportBody"></tbody></table></div><div id="printPages" class="print-pages" aria-hidden="true"></div></div></section>
 
 <section id="settings" class="view hide"><div class="panel"><h2>Data</h2><p class="muted">Entries are stored on this device using IndexedDB.</p><div class="grid"><button class="secondary" id="export">Export JSON backup</button><button class="secondary" id="importBtn">Restore JSON backup</button></div><input id="importFile" type="file" accept=".json,application/json" class="hide"><br><button class="danger" id="clear">Clear all entries</button></div><div class="panel"><h2>About</h2><p class="muted">Test version for personal sleep-diary use. The electronic report and printable report will be refined against the hospital paper diary before this becomes the official version.</p></div></section>
 
@@ -233,10 +233,32 @@ function buildReportRows(records){
   return '<tr><td>'+esc(p.td)+'</td><td>'+esc(p.naps)+'</td><td>'+esc(p.comments)+'</td><td>'+clock(p.got?.t)+'</td><td>'+clock(p.tryS?.t)+'</td><td>'+esc(p.details?.lat!==undefined&&p.details.lat!==''?p.details.lat+' min':'—')+'</td><td>'+esc(p.details?.awak||'—')+'</td><td>'+esc(p.details?.awakeDur!==undefined&&p.details.awakeDur!==''?p.details.awakeDur+' min':'—')+'</td><td>'+clock(p.wake?.t)+'</td><td>'+clock(p.out?.t)+'</td><td>'+qualityHtml+'</td></tr>';
  }).join('');
 }
+function buildPrintPages(){
+ const source=document.querySelector('#report .reportwrap table');
+ const host=document.getElementById('printPages');
+ if(!source||!host)return;
+ host.innerHTML='';
+ const rows=Array.from(source.querySelectorAll('tbody tr'));
+ const headers=Array.from(source.querySelectorAll('thead tr:last-child th')).map(th=>th.textContent);
+ const chunkSize=5;
+ const chunks=[];
+ for(let i=0;i<rows.length;i+=chunkSize)chunks.push(rows.slice(i,i+chunkSize));
+ if(!chunks.length)chunks.push([]);
+ chunks.forEach((chunk,index)=>{
+  const page=document.createElement('section');page.className='print-page';
+  const title=document.createElement('div');title.className='print-page-title';title.textContent='PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST';page.appendChild(title);
+  const p1=document.createElement('p');p1.className='print-page-instructions';p1.textContent='Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.';page.appendChild(p1);
+  const p2=document.createElement('p');p2.className='print-page-instructions';p2.textContent='Please record any naps in the comments section.';page.appendChild(p2);
+  const table=document.createElement('table'),thead=document.createElement('thead'),tr=document.createElement('tr');
+  headers.forEach(label=>{const th=document.createElement('th');th.textContent=label;tr.appendChild(th)});
+  thead.appendChild(tr);table.appendChild(thead);
+  const tbody=document.createElement('tbody');chunk.forEach(row=>tbody.appendChild(row.cloneNode(true)));table.appendChild(tbody);page.appendChild(table);host.appendChild(page);
+ });
+}
 async function renderReport(){const records=await all();const problem=validateSequence(records);if(problem){document.getElementById('reportBody').innerHTML='';return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
 async function renderAll(){await renderReport()}
 async function openReportIfValid(){const records=await all(),problem=validateSequence(records);if(problem){showSequenceProblem(problem);return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});document.getElementById('printReport').onclick=async()=>{if(await openReportIfValid())window.print()};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});document.getElementById('printReport').onclick=async()=>{if(await openReportIfValid()){buildPrintPages();window.print()}};
 document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
 document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
 document.getElementById('export').onclick=async()=>{let data={schemaVersion:2,records:await all()},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-v2-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
