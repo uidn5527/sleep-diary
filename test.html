@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.44</title>
+<title>Sleep Diary — Test v0.45</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -32,7 +32,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 .print-page .quality-options{font-size:5.8pt;line-height:1.04;white-space:nowrap}
 .print-page .quality-option{display:block}
 .print-page .quality-mark{display:inline-block;width:7pt;font-weight:700}
-.print-label{position:relative;margin:.12in .04in .04in auto;width:2.65in;height:.91in;border:1px solid #aaa;border-radius:.12in;padding:.045in .07in;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif;line-height:1.05;box-sizing:border-box}
+.print-label{position:relative;margin:.12in .04in .04in auto;width:2.65in;max-height:.91in;object-fit:contain;display:block}
 .print-label .label-top{display:flex;justify-content:space-between;gap:.06in;font-size:8.2pt;font-weight:400;white-space:nowrap}
 .print-label .label-study{font-size:8.4pt;font-weight:400;white-space:nowrap;margin-top:.025in}
 .print-label .label-name{font-size:9.5pt;font-weight:700;white-space:nowrap;margin-top:.01in}
@@ -101,7 +101,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.44</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.45</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
@@ -330,6 +330,7 @@ function buildReportRows(records){
   return '<tr><td>'+esc(p.td)+'</td><td>'+esc(p.naps)+'</td><td>'+esc(p.comments)+'</td><td>'+clock(p.got?.t)+'</td><td>'+clock(p.tryS?.t)+'</td><td>'+esc(p.details?.lat!==undefined&&p.details.lat!==''?p.details.lat+' min':'—')+'</td><td>'+esc(p.details?.awak||'—')+'</td><td>'+esc(p.details?.awakeDur!==undefined&&p.details.awakeDur!==''?p.details.awakeDur+' min':'—')+'</td><td>'+clock(p.wake?.t)+'</td><td>'+clock(p.out?.t)+'</td><td>'+qualityHtml+'</td></tr>';
  }).join('');
 }
+let printLabelData='';
 function buildPrintPages(){
  const source=document.querySelector('#report .reportwrap table');
  const host=document.getElementById('printPages');
@@ -347,8 +348,9 @@ function buildPrintPages(){
   headers.forEach(label=>{const th=document.createElement('th');th.textContent=label;tr.appendChild(th)});
   thead.appendChild(tr);table.appendChild(thead);
   const tbody=document.createElement('tbody');table.appendChild(tbody);page.appendChild(table);
-  const label=document.createElement('div');label.className='print-label';
-  label.innerHTML='<div class="label-top"><span>DOS: 10/5/2026</span><span>SLEEPLAB-DF</span></div><div class="label-study">DFSLEEPACT DF SLEEP ACTIGRAPHY</div><div class="label-name">Friedhofer, Michel</div><div class="label-pref">Pref Name:</div><div class="label-demographics"><span>MRN: 101098093</span><span>DOB: 2/22/1977</span><span>M</span><span>49yrs</span></div><div class="label-barcode-row"><span class="label-csn">CSN:</span><div class="label-barcode-wrap"><svg class="code39-barcode" viewBox="0 0 200 28" role="img" aria-label="Code 39 barcode encoding 414695818"></svg><div class="label-barcode-number">414695818</div></div></div>';
+  const label=document.createElement('img');label.className='print-label';label.alt='Patient label';label.dataset.patientLabel='true';
+  if(printLabelData)label.src=printLabelData;
+  else label.style.display='none';
   page.appendChild(label);
   container.appendChild(page);
   return {page,tbody};
@@ -395,7 +397,7 @@ function buildPrintPages(){
 async function renderReport(){const records=await all();const problem=validateSequence(records);if(problem){document.getElementById('reportBody').innerHTML='';return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
 async function renderAll(){await renderReport()}
 async function openReportIfValid(){const records=await all(),problem=validateSequence(records);if(problem){showSequenceProblem(problem);return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});document.getElementById('printReport').onclick=async()=>{if(await openReportIfValid()){buildPrintPages();window.print()}};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});document.getElementById('printReport').onclick=async()=>{if(!await openReportIfValid())return;const include=confirm('Include the patient label on each page?\\n\\nChoose OK to include it, or Cancel to print without it.');printLabelData=localStorage.getItem('sleepDiaryPatientLabel')||'';if(include&&!printLabelData){const picker=document.createElement('input');picker.type='file';picker.accept='image/jpeg,.jpg,.jpeg';picker.onchange=()=>{const file=picker.files&&picker.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{printLabelData=String(reader.result||'');try{localStorage.setItem('sleepDiaryPatientLabel',printLabelData)}catch(e){}buildPrintPages();window.print()};reader.readAsDataURL(file)};picker.click();return}buildPrintPages();window.print()};
 document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
 document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
 document.getElementById('export').onclick=async()=>{let data={schemaVersion:2,records:await all()},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-v2-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
