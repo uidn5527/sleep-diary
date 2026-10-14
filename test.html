@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.49</title>
+<title>Sleep Diary — Test v0.50</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -101,7 +101,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.49</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.50</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
@@ -120,7 +120,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 
 <section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" id="printReport">Print / PDF</button></div><div class="print-heading"><h1>PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</h1><p>Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p>Please record any naps in the comments section.</p></div><div class="reportwrap"><table><thead><tr class="print-repeat-heading"><th colspan="11"><div class="repeat-title">PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</div><p class="repeat-instructions">Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p class="repeat-instructions">Please record any naps in the comments section.</p></th></tr><tr><th>Today’s date</th><th>Naps you took today</th><th>Comments</th><th>Time you got into bed</th><th>Time you tried to go to sleep</th><th>Length of time it took to fall asleep</th><th>Number of awakenings</th><th>Total duration of awakenings</th><th>Time of final awakening</th><th>Time you got out of bed</th><th>Quality of sleep</th></tr></thead><tbody id="reportBody"></tbody></table></div><div id="printPages" class="print-pages" aria-hidden="true"></div></div></section>
 
-<section id="settings" class="view hide"><div class="panel"><h2>Data</h2><p class="muted">Entries are stored on this device using IndexedDB.</p><div class="grid"><button class="secondary" id="export">Export JSON backup</button><button class="secondary" id="importBtn">Restore JSON backup</button></div><input id="importFile" type="file" accept=".json,application/json" class="hide"><br><button class="danger" id="clear">Clear all entries</button></div><div class="panel"><h2>About</h2><p class="muted">Test version for personal sleep-diary use. The electronic report and printable report will be refined against the hospital paper diary before this becomes the official version.</p></div></section>
+<section id="settings" class="view hide"><div class="panel"><h2>Patient label</h2><p class="muted">The label image is stored privately in this browser on this device. It is not uploaded to the repository.</p><div id="patientLabelStatus" class="muted" role="status">Checking for a stored label…</div><div id="patientLabelPreviewWrap" class="hide" style="margin:12px 0;padding:10px;border:1px solid #bbb;border-radius:8px;background:#fff"><img id="patientLabelPreview" alt="Stored patient label preview" style="display:block;max-width:100%;max-height:220px;margin:auto;object-fit:contain"></div><div class="grid"><button class="secondary" id="choosePatientLabel">Choose label image</button><button class="danger" id="clearPatientLabel" disabled>Clear stored image</button></div><input id="patientLabelFile" type="file" accept="image/jpeg,.jpg,.jpeg,image/png" class="hide"><p class="muted">Choose a JPG or PNG. The saved image can be included when printing the report.</p></div><div class="panel"><h2>Data</h2><p class="muted">Diary entries are stored on this device using IndexedDB.</p><div class="grid"><button class="secondary" id="export">Export JSON backup</button><button class="secondary" id="importBtn">Restore JSON backup</button></div><input id="importFile" type="file" accept=".json,application/json" class="hide"><br><button class="danger" id="clear">Clear all entries</button></div><div class="panel"><h2>About</h2><p class="muted">Test version for personal sleep-diary use. The electronic report and printable report will be refined against the hospital paper diary before this becomes the official version.</p></div></section>
 
 <section id="howto" class="view hide">
 <div class="panel"><h2>How to use the Sleep Diary</h2><p>Record events as they happen whenever possible. The diary saves entries on this device automatically.</p><h3>1. Record your nighttime sleep</h3><ol><li>Tap <strong>Got in bed</strong> when you get into bed.</li><li>Tap <strong>Try to sleep</strong> when you begin trying to fall asleep.</li><li>Tap <strong>Woke up</strong> when you wake for the final time. A sleep-details form will appear; enter your best estimates for sleep latency, awakenings, total time awake, sleep quality, and any comments. Save the form to keep those details.</li><li>Tap <strong>Out of bed</strong> when you actually get out of bed.</li></ol><h3>2. Record naps and device use</h3><ul><li>Tap <strong>Nap start</strong> and <strong>Nap end</strong> around each nap.</li><li>Tap <strong>Device off</strong> and <strong>Device on</strong> when you remove and replace the actigraphy device.</li><li>If you miss an event, use <strong>Manual event entry</strong> to enter its date and time. You can also add sleep details manually.</li></ul><h3>3. Review or correct entries</h3><p>Open <strong>Diary</strong>, select a sleep-period date, and review the entries. Use the pencil icon to edit an entry or the trash icon to delete it. The diary groups events into sleep periods using a noon-to-noon day boundary.</p><h3>4. Create your report</h3><p>Open <strong>Report</strong> to review the printable table. Use <strong>Print / PDF</strong> to print it or save it as a PDF. If the event sequence appears inconsistent, the app will identify a suspect event; edit or delete it and try again.</p><h3>5. Back up your data</h3><p>Open <strong>Settings</strong> and choose <strong>Export JSON backup</strong> to save a copy. <strong>Restore JSON backup</strong> replaces the entries on this device with the contents of that backup. Keep the backup file somewhere safe.</p><p class="muted">This version stores diary data in this browser on this device. It does not automatically synchronize records between devices.</p></div>
@@ -334,7 +334,7 @@ let printLabelData='';
 function buildPrintPages(){
  const source=document.querySelector('#report .reportwrap table');
  const host=document.getElementById('printPages');
- if(!source||!host)return;
+ if(!source||!host)throw new Error('The report table could not be found.');
  host.innerHTML='';
  const rows=Array.from(source.querySelectorAll('tbody tr'));
  const headers=Array.from(source.querySelectorAll('thead tr:last-child th')).map(th=>th.textContent);
@@ -348,60 +348,66 @@ function buildPrintPages(){
   headers.forEach(label=>{const th=document.createElement('th');th.textContent=label;tr.appendChild(th)});
   thead.appendChild(tr);table.appendChild(thead);
   const tbody=document.createElement('tbody');table.appendChild(tbody);page.appendChild(table);
-  if(printLabelData){const label=document.createElement('img');label.className='print-label';label.alt='Patient label';label.dataset.patientLabel='true';label.src=printLabelData;page.appendChild(label);}
-  container.appendChild(page);
-  return {page,tbody};
+  if(printLabelData){const label=document.createElement('img');label.className='print-label';label.alt='Patient label';label.src=printLabelData;page.appendChild(label);}
+  container.appendChild(page);return {page,tbody};
  };
  const measure=document.createElement('div');
  measure.className='print-measure';measure.style.cssText='position:absolute;left:-30000px;top:0;width:10.4in;height:auto;visibility:hidden;display:block;overflow:visible;';
  document.body.appendChild(measure);
- const pages=[];
- const code39={0:'nnnwwnwnn',1:'wnnwnnnnw',2:'nnwwnnnnw',3:'wnwwnnnnn',4:'nnnwwnnnw',5:'wnnwwnnnn',6:'nnwwwnnnn',7:'nnnwnnwnw',8:'wnnwnnwnn',9:'nnwwnnwnn',A:'wnnnnwnnw',B:'nnwnnwnnw',C:'wnwnnwnnn',D:'nnnnwwnnw',E:'wnnnwwnnn',F:'nnwnwwnnn',G:'nnnnnwwnw',H:'wnnnnwwnn',I:'nnwnnwwnn',J:'nnnnwwwnn',K:'wnnnnnnww',L:'nnwnnnnww',M:'wnwnnnnwn',N:'nnnnwnnww',O:'wnnnwnnwn',P:'nnwnwnnwn',Q:'nnnnnnwww',R:'wnnnnnwwn',S:'nnwnnnwwn',T:'nnnnwnwwn',U:'wwnnnnnwn',V:'nwwnnnnwn',W:'wwwnnnnnn',X:'nwnnwnnwn',Y:'wwnnwnnnn',Z:'nwwnwnnnn','-':'nwnnnnwnw','.':'wwnnnwnnn',' ':'nwwnnnwnn','$':'nwnwnwnnn','/':'nwnwnnnwn','+':'nwnnnwnwn','%':'nnnwnwnwn','*':'nwnnwnwnn'};
- const drawCode39=svg=>{
-  const value='*414695818*',wide=3,unit=1,gap=1;
-  let x=0;const bars=[];
-  for(let ci=0;ci<value.length;ci++){
-   const pattern=code39[value[ci]];
-   if(!pattern)continue;
-   for(let j=0;j<pattern.length;j++){
-    const w=pattern[j]==='w'?wide:unit;
-    if(j%2===0)bars.push('<rect x="'+x+'" y="0" width="'+w+'" height="24" fill="#111"/>');
-    x+=w;
-   }
-   if(ci<value.length-1)x+=gap;
-  }
-  svg.setAttribute('viewBox','0 0 '+x+' 24');
-  svg.setAttribute('preserveAspectRatio','none');
-  svg.innerHTML=bars.join('');
- };
- let current=makePage(measure);
- current.page.querySelectorAll('.code39-barcode').forEach(drawCode39);
- rows.forEach(row=>{
-  const clone=row.cloneNode(true);
-  current.tbody.appendChild(clone);
-  if(current.page.getBoundingClientRect().height>pageHeight && current.tbody.children.length>1){
-   current.tbody.removeChild(clone);
-   pages.push(current.page);
-   current=makePage(measure);
-   current.page.querySelectorAll('.code39-barcode').forEach(drawCode39);
-   current.tbody.appendChild(clone);
-  }
- });
- pages.push(current.page);
- pages.forEach((page,index)=>{page.remove();host.appendChild(page);page.querySelectorAll('.code39-barcode').forEach(drawCode39);});
- measure.remove();
+ try{
+  const pages=[];let current=makePage(measure);
+  rows.forEach(row=>{const clone=row.cloneNode(true);current.tbody.appendChild(clone);if(current.page.getBoundingClientRect().height>pageHeight&&current.tbody.children.length>1){current.tbody.removeChild(clone);pages.push(current.page);current=makePage(measure);current.tbody.appendChild(clone)}});
+  pages.push(current.page);
+  pages.forEach(page=>{page.remove();host.appendChild(page)});
+ }finally{measure.remove()}
+ if(!host.children.length)throw new Error('No report pages were created. Check that the diary contains reportable entries.');
 }
 async function renderReport(){const records=await all();const problem=validateSequence(records);if(problem){document.getElementById('reportBody').innerHTML='';return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
 async function renderAll(){await renderReport()}
 async function openReportIfValid(){const records=await all(),problem=validateSequence(records);if(problem){showSequenceProblem(problem);return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});function openLabelDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open('SleepDiaryPrivateAssets',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('assets'))req.result.createObjectStore('assets')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
-async function getSavedPatientLabel(){try{const db=await openLabelDB();return await new Promise((resolve,reject)=>{const tx=db.transaction('assets','readonly'),req=tx.objectStore('assets').get('patientLabel');req.onsuccess=()=>resolve(req.result||'');req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close()})}catch(e){return ''}}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});
+function openLabelDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open('SleepDiaryPrivateAssets',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('assets'))req.result.createObjectStore('assets')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function getSavedPatientLabel(){const db=await openLabelDB();return await new Promise((resolve,reject)=>{const tx=db.transaction('assets','readonly'),req=tx.objectStore('assets').get('patientLabel');req.onsuccess=()=>resolve(req.result||'');req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();tx.onerror=()=>{db.close();reject(tx.error)}})}
 async function savePatientLabel(data){const db=await openLabelDB();return await new Promise((resolve,reject)=>{const tx=db.transaction('assets','readwrite');tx.objectStore('assets').put(data,'patientLabel');tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)};tx.onabort=()=>{db.close();reject(tx.error)}})}
+async function deleteSavedPatientLabel(){const db=await openLabelDB();return await new Promise((resolve,reject)=>{const tx=db.transaction('assets','readwrite');tx.objectStore('assets').delete('patientLabel');tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)};tx.onabort=()=>{db.close();reject(tx.error)}})}
 let cachedPatientLabel='';
-getSavedPatientLabel().then(value=>{cachedPatientLabel=value;}).catch(()=>{});
-function printWithLabelChoice(include){printLabelData=include?cachedPatientLabel:'';if(include&&!printLabelData){const picker=document.createElement('input');picker.type='file';picker.accept='image/jpeg,.jpg,.jpeg,image/png';picker.onchange=()=>{const file=picker.files&&picker.files[0];if(!file)return;const reader=new FileReader();reader.onload=async()=>{printLabelData=String(reader.result||'');try{await savePatientLabel(printLabelData);cachedPatientLabel=printLabelData}catch(e){alert('The label could not be saved on this device. Please allow site storage and try again.');return}buildPrintPages();window.print()};reader.readAsDataURL(file)};picker.click();return}buildPrintPages();window.print()}
-function showPrintLabelPrompt(){const overlay=document.createElement('div');overlay.className='dialog-backdrop';overlay.innerHTML='<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="printLabelTitle"><h2 id="printLabelTitle">Print report</h2><p>Would you like to include the patient label?</p><p class="muted">The label will appear in the bottom-right corner of each page.</p><div style="display:flex;flex-direction:column;gap:10px;margin-top:16px"><label style="display:flex;align-items:center;gap:10px;margin:0;font-size:16px"><input type="radio" name="printLabelChoice" value="yes" checked style="width:auto;margin:0">Yes, include the label</label><label style="display:flex;align-items:center;gap:10px;margin:0;font-size:16px"><input type="radio" name="printLabelChoice" value="no" style="width:auto;margin:0">No, omit the label</label></div><div class="dialog-actions"><button class="secondary" id="printLabelCancel">Cancel</button><button class="primary" id="printLabelContinue">Continue</button></div></div>';document.body.append(overlay);overlay.querySelector('#printLabelCancel').onclick=()=>overlay.remove();overlay.querySelector('#printLabelContinue').onclick=()=>{const include=overlay.querySelector('input[name="printLabelChoice"]:checked')?.value==='yes';overlay.remove();printWithLabelChoice(include)}}
-document.getElementById('printReport').onclick=async()=>{if(!await openReportIfValid())return;showPrintLabelPrompt()};
+async function refreshPatientLabelUI(){
+ const status=document.getElementById('patientLabelStatus'),wrap=document.getElementById('patientLabelPreviewWrap'),preview=document.getElementById('patientLabelPreview'),clear=document.getElementById('clearPatientLabel');
+ try{cachedPatientLabel=await getSavedPatientLabel();if(cachedPatientLabel){preview.src=cachedPatientLabel;wrap.classList.remove('hide');status.textContent='A patient label image is stored on this device.';clear.disabled=false}else{preview.removeAttribute('src');wrap.classList.add('hide');status.textContent='No patient label image is stored.';clear.disabled=true}}
+ catch(e){status.textContent='Could not access local label storage. Try reloading the app.';clear.disabled=true}
+}
+document.getElementById('choosePatientLabel').onclick=()=>document.getElementById('patientLabelFile').click();
+document.getElementById('patientLabelFile').onchange=async e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ if(!/^image\/(jpeg|png)$/.test(file.type)){alert('Please choose a JPG or PNG image.');e.target.value='';return}
+ const reader=new FileReader();
+ reader.onerror=()=>alert('The selected image could not be read. Please try another image.');
+ reader.onload=async()=>{try{const data=String(reader.result||'');if(!data)throw new Error('Empty image');await savePatientLabel(data);await refreshPatientLabelUI();alert('Patient label saved on this device.')}catch(err){alert('The label could not be saved. Check available storage and try again.')}};
+ reader.readAsDataURL(file);e.target.value='';
+};
+document.getElementById('clearPatientLabel').onclick=async()=>{if(!cachedPatientLabel)return;if(!confirm('Clear the stored patient label image from this device?'))return;try{await deleteSavedPatientLabel();await refreshPatientLabelUI()}catch(e){alert('The stored label could not be cleared. Please try again.')}};
+refreshPatientLabelUI();
+function showPrintReadyPrompt(){
+ const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+ overlay.innerHTML='<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="printReadyTitle"><h2 id="printReadyTitle">Report ready</h2><p>The report has been prepared. Tap Print now to open the print or PDF interface.</p><div class="dialog-actions"><button class="secondary" id="printReadyCancel">Cancel</button><button class="primary" id="printReadyNow">Print now</button></div></div>';
+ document.body.append(overlay);
+ overlay.querySelector('#printReadyCancel').onclick=()=>overlay.remove();
+ overlay.querySelector('#printReadyNow').onclick=()=>{overlay.remove();try{window.print()}catch(e){alert('The print interface could not be opened. Try opening this page in Safari and print again.')}};
+}
+function printWithLabelChoice(include){
+ try{
+  if(include&&!cachedPatientLabel){alert('No label image is stored yet. Open Settings and choose a label image, then try printing again.');return}
+  printLabelData=include?cachedPatientLabel:'';
+  buildPrintPages();
+  showPrintReadyPrompt();
+ }catch(e){alert('The report could not be prepared: '+(e&&e.message?e.message:'unknown error'))}
+}
+function showPrintLabelPrompt(){
+ const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+ overlay.innerHTML='<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="printLabelTitle"><h2 id="printLabelTitle">Print report</h2><p>Would you like to include the patient label?</p><p class="muted">The label will appear in the bottom-right corner of each page.</p><div style="display:flex;flex-direction:column;gap:10px;margin-top:16px"><label style="display:flex;align-items:center;gap:10px;margin:0;font-size:16px"><input type="radio" name="printLabelChoice" value="yes" checked style="width:auto;margin:0">Yes, include the label</label><label style="display:flex;align-items:center;gap:10px;margin:0;font-size:16px"><input type="radio" name="printLabelChoice" value="no" style="width:auto;margin:0">No, omit the label</label></div><div class="dialog-actions"><button class="secondary" id="printLabelCancel">Cancel</button><button class="primary" id="printLabelContinue">Continue</button></div></div>';
+ document.body.append(overlay);overlay.querySelector('#printLabelCancel').onclick=()=>overlay.remove();overlay.querySelector('#printLabelContinue').onclick=()=>{const include=overlay.querySelector('input[name="printLabelChoice"]:checked')?.value==='yes';overlay.remove();printWithLabelChoice(include)}
+}
+document.getElementById('printReport').onclick=async()=>{try{if(!await openReportIfValid())return;showPrintLabelPrompt()}catch(e){alert('The report could not be opened: '+(e&&e.message?e.message:'unknown error'))}};
 document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
 document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
 document.getElementById('export').onclick=async()=>{let data={schemaVersion:2,records:await all()},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-v2-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
