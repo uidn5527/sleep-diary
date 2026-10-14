@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.50</title>
+<title>Sleep Diary — Test v0.51</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -49,6 +49,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
  .print-label{position:relative!important;display:block!important;margin:.12in .04in .04in auto!important;break-inside:avoid!important;page-break-inside:avoid!important}
 }
 @media print{
+ .dialog-backdrop{display:none!important}
  @page{size:letter landscape;margin:0.28in 0.30in 0.30in}
  html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important;font-family:"Times New Roman",Times,serif!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  header,nav,.noprint{display:none!important}
@@ -101,7 +102,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.50</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.51</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
@@ -389,10 +390,10 @@ document.getElementById('clearPatientLabel').onclick=async()=>{if(!cachedPatient
 refreshPatientLabelUI();
 function showPrintReadyPrompt(){
  const overlay=document.createElement('div');overlay.className='dialog-backdrop';
- overlay.innerHTML='<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="printReadyTitle"><h2 id="printReadyTitle">Report ready</h2><p>The report has been prepared. Tap Print now to open the print or PDF interface.</p><div class="dialog-actions"><button class="secondary" id="printReadyCancel">Cancel</button><button class="primary" id="printReadyNow">Print now</button></div></div>';
+ overlay.innerHTML='<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="printReadyTitle"><h2 id="printReadyTitle">Report ready</h2><p>The report has been prepared. Tap Print now to open the print or PDF interface.</p><p class="muted">If the print screen does not appear, close this prompt and use Safari’s Share menu, then choose Print.</p><div class="dialog-actions"><button class="secondary" id="printReadyCancel">Cancel</button><button class="primary" id="printReadyNow">Print now</button></div></div>';
  document.body.append(overlay);
  overlay.querySelector('#printReadyCancel').onclick=()=>overlay.remove();
- overlay.querySelector('#printReadyNow').onclick=()=>{overlay.remove();try{window.print()}catch(e){alert('The print interface could not be opened. Try opening this page in Safari and print again.')}};
+ overlay.querySelector('#printReadyNow').onclick=()=>{try{window.print()}catch(e){alert('Safari could not open printing. Close this prompt and use Safari’s Share menu, then choose Print.')}};
 }
 function printWithLabelChoice(include){
  try{
