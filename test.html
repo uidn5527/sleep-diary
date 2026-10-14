@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f6f4" id="themeColor">
-<title>Sleep Diary — Test v0.46</title>
+<title>Sleep Diary — Test v0.47</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
 *{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
@@ -32,7 +32,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 .print-page .quality-options{font-size:5.8pt;line-height:1.04;white-space:nowrap}
 .print-page .quality-option{display:block}
 .print-page .quality-mark{display:inline-block;width:7pt;font-weight:700}
-.print-label{position:relative;margin:.12in .04in .04in auto;width:2.65in;max-height:.91in;object-fit:contain;display:block}
+.print-label{position:relative;margin:.12in .04in .04in auto;width:2.65in;max-height:.91in;object-fit:contain;display:block}.print-label[hidden]{display:none!important}
 .print-label .label-top{display:flex;justify-content:space-between;gap:.06in;font-size:8.2pt;font-weight:400;white-space:nowrap}
 .print-label .label-study{font-size:8.4pt;font-weight:400;white-space:nowrap;margin-top:.025in}
 .print-label .label-name{font-size:9.5pt;font-weight:700;white-space:nowrap;margin-top:.01in}
@@ -101,7 +101,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid 
 </style>
 </head>
 <body>
-<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.46</span></div></header>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.47</span></div></header>
 <nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
 <main>
 <section id="today" class="view">
@@ -348,10 +348,7 @@ function buildPrintPages(){
   headers.forEach(label=>{const th=document.createElement('th');th.textContent=label;tr.appendChild(th)});
   thead.appendChild(tr);table.appendChild(thead);
   const tbody=document.createElement('tbody');table.appendChild(tbody);page.appendChild(table);
-  const label=document.createElement('img');label.className='print-label';label.alt='Patient label';label.dataset.patientLabel='true';
-  if(printLabelData)label.src=printLabelData;
-  else label.style.display='none';
-  page.appendChild(label);
+  if(printLabelData){const label=document.createElement('img');label.className='print-label';label.alt='Patient label';label.dataset.patientLabel='true';label.src=printLabelData;page.appendChild(label);}
   container.appendChild(page);
   return {page,tbody};
  };
