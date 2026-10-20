@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f6f4" id="themeColor">
+<title>Sleep Diary — Test v0.54</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#222;background:#f6f6f4}
+*{box-sizing:border-box}body{margin:0;transition:background .25s,color .25s}.night{--page:#101722;--surface:#182231;--surface2:#202c3c;--text:#edf3fa;--muted:#aab7c7;--border:#344255;--nav:#121b28}.night body{background:var(--page);color:var(--text)}.night header,.night nav,.night .panel{background:var(--surface);border-color:var(--border)}.night nav button{color:var(--muted)}.night nav button.active{color:#fff;border-color:#9db9d6}.night input,.night select,.night textarea,.night button.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.night button.danger{background:var(--surface2);color:#ffb0aa;border-color:var(--border)}.night .muted,.night label,.night .event small,.night .saved{color:var(--muted)}.night .event{border-color:var(--border)}.night .pill{background:#2a3748;color:#dce7f3}.night table{color:var(--text)}.night th,.night td{border-color:var(--border)}.night th{background:var(--surface2);color:var(--text)}header{padding:calc(14px + env(safe-area-inset-top)) 16px 14px;background:#fff;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}h1{font-size:22px;margin:0}.badge{font-size:12px;color:#666}.theme-toggle{border:0;background:transparent;font-size:16px;padding:2px 4px;line-height:1;cursor:pointer}
+nav{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:2}nav button{border:0;background:none;padding:11px 4px;color:#666}nav button.active{color:#111;font-weight:600;border-bottom:2px solid #111}
+main{max-width:760px;margin:auto;padding:16px 14px 40px}.panel{background:#fff;border:1px solid #ddd;border-radius:12px;padding:14px;margin-bottom:14px}h2{font-size:17px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.event-groups{display:flex;flex-direction:column;gap:16px}.event-group{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.event-group.sleep .action{background:#dbe9f7;border-color:#b6cee5}
+.action:disabled,.action[aria-disabled="true"]{background:#e2e2e2!important;border-color:#c9c9c9!important;color:#777!important;opacity:1!important;cursor:not-allowed!important;box-shadow:none!important}
+.night .action:disabled,.night .action[aria-disabled="true"]{background:#30343a!important;border-color:#454b53!important;color:#9299a2!important}
+.current-state{display:block;text-align:center;padding:0;margin:0 0 8px;border:0;border-radius:0;background:transparent;font-size:17px;color:#222}
+.current-state strong{display:block;font-size:17px;color:inherit}.night .current-state{color:#f5f7fa}
+.current-state .state-label{color:var(--muted,#666);font-size:12px;text-transform:uppercase;letter-spacing:.04em}.event-group.nap .action{background:#e5f0df;border-color:#bfd5b5}.event-group.device .action{background:#f1e3d2;border-color:#dbc5a9}.night .event-group.sleep .action{background:#263e59;border-color:#3d5b7b}.night .event-group.nap .action{background:#30452f;border-color:#4d684b}.night .event-group.device .action{background:#4a3b2d;border-color:#6b5741}.action{min-height:64px;font-size:17px;border:1px solid #ccc;border-radius:10px;font-weight:600;color:#222}.night .action{color:#f5f7fa}.action:active{background:#eee}
+label{display:block;font-size:13px;color:#555;margin:11px 0 5px;min-width:0}input,select,textarea{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;font:inherit;padding:10px;border:1px solid #bbb;border-radius:8px;background:#fff}input[type="date"],input[type="time"]{-webkit-appearance:none;appearance:none;display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box}textarea{min-height:90px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button.secondary,button.primary,button.danger{border:1px solid #bbb;border-radius:8px;padding:10px 12px;background:#fff;font:inherit}.icon-btn{width:52px;height:52px;padding:0;display:inline-flex;align-items:center;justify-content:center}.icon-btn svg{width:24px;height:24px;fill:currentColor;display:block}button.primary{background:#222;color:#fff;border-color:#222}button.danger{color:#9b0000}.muted{color:#666;font-size:13px}.event{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eee}.event:last-child{border-bottom:0}.event strong{font-size:14px}.event small{color:#666}.day{padding:12px 0;border-bottom:1px solid #eee}.day:last-child{border-bottom:0}.dayhead{display:flex;justify-content:space-between;gap:10px}.pill{font-size:12px;background:#eee;border-radius:999px;padding:3px 8px;white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{border:1px solid #bbb;padding:6px;vertical-align:top;text-align:left}th{background:#eee}.reportwrap{overflow:auto}.hide{display:none}.dialog-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;padding:14px;z-index:20}.dialog{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.25)}.night .dialog{background:var(--surface);color:var(--text)}.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px;flex-wrap:wrap}.dialog label{margin-top:10px}.saved{font-size:12px;color:#666;text-align:right;margin-top:7px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,1fr)}.event-group{grid-template-columns:repeat(3,1fr)}.event-group.nap,.event-group.device{grid-template-columns:repeat(2,1fr)}}
+/* Print layout modeled on the supplied hospital diary form */
+.print-heading{display:none}.print-repeat-heading{display:none}.print-pages{display:none}
+.print-page{position:relative;display:block;box-sizing:border-box;min-height:0;height:auto;width:10.4in;padding-bottom:0;font-family:"Times New Roman",Times,serif;color:#111;line-height:1.12}
+.print-page-title{font-family:Arial,Helvetica,sans-serif;font-size:15pt;font-weight:700;line-height:1.08;text-transform:uppercase;text-decoration:underline;margin:0 0 .08in;color:#111}
+.print-page-instructions{font-family:Arial,Helvetica,sans-serif;font-size:9pt;line-height:1.15;font-weight:400;margin:0 0 2pt;color:#111}
+.print-page table{width:100%;table-layout:fixed;border-collapse:collapse;border-spacing:0;font-size:8pt;line-height:1.12}
+.print-page th,.print-page td{border:.65pt solid #222;padding:3pt 3pt 2pt;vertical-align:top;text-align:left;font-weight:400;overflow-wrap:anywhere;word-break:normal;background:#fff;color:#111}
+.print-page th{height:.62in;background:#e5e5e5}
+.print-page tbody td{font-size:6.4pt;line-height:1.08;padding:2pt 2pt 1pt}
+.print-page tbody td:nth-child(2),.print-page tbody td:nth-child(3){font-size:6.1pt;line-height:1.05}
+.print-page .quality-options{font-size:5.8pt;line-height:1.04;white-space:nowrap}
+.print-page .quality-option{display:block}
+.print-page .quality-mark{display:inline-block;width:7pt;font-weight:700}
+.print-label{position:relative;margin:.12in .04in .04in auto;width:2.65in;max-height:.91in;object-fit:contain;display:block}.print-label[hidden]{display:none!important}
+.print-label .label-top{display:flex;justify-content:space-between;gap:.06in;font-size:8.2pt;font-weight:400;white-space:nowrap}
+.print-label .label-study{font-size:8.4pt;font-weight:400;white-space:nowrap;margin-top:.025in}
+.print-label .label-name{font-size:9.5pt;font-weight:700;white-space:nowrap;margin-top:.01in}
+.print-label .label-pref{font-size:8.2pt;font-weight:400;white-space:nowrap}
+.print-label .label-demographics{display:flex;justify-content:space-between;gap:.04in;font-size:8.2pt;white-space:nowrap;margin-top:.025in}
+.print-label .label-barcode-row{display:flex;align-items:flex-start;gap:.04in;margin-top:.015in}
+.print-label .label-csn{font-size:8.1pt;white-space:nowrap}
+.print-label .label-barcode-wrap{flex:1;min-width:0;text-align:center}
+.print-label svg{display:block;width:100%;height:.22in}
+.print-label .label-barcode-number{font-size:8.2pt;line-height:1;text-align:center;letter-spacing:.5pt;margin-top:0}
+.print-measure .print-page{min-height:0!important;height:auto!important;padding-bottom:0!important}.print-measure .print-label{display:none!important}
+@media print{
+ .print-page{display:block!important;position:relative!important;min-height:0!important;height:auto!important;overflow:visible!important;padding-bottom:0!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .print-label{position:relative!important;display:block!important;margin:.12in .04in .04in auto!important;break-inside:avoid!important;page-break-inside:avoid!important}
+}
+@media print{
+ .dialog-backdrop{display:none!important}
+ @page{size:letter landscape;margin:0.28in 0.30in 0.30in}
+ html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important;font-family:"Times New Roman",Times,serif!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ header,nav,.noprint{display:none!important}
+ main{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+ #report{display:block!important}
+ .view.hide{display:none!important}
+ #report .panel{display:block!important;border:0!important;border-radius:0!important;margin:0!important;padding:0!important;background:#fff!important}
+ .print-heading{display:none!important}
+ #report .reportwrap{display:none!important}
+ #report .print-pages{display:block!important;width:100%!important}
+ .print-page{break-after:page;page-break-after:always;width:100%!important}
+ .print-page:last-child{break-after:auto;page-break-after:auto}
+ .print-page-title{font-family:Arial,Helvetica,sans-serif!important;font-size:15pt!important;font-weight:700!important;line-height:1.08!important;text-transform:uppercase!important;text-decoration:underline!important;margin:0 0 0.08in!important;color:#111!important}
+ .print-page-instructions{font-family:Arial,Helvetica,sans-serif!important;font-size:9pt!important;line-height:1.15!important;font-weight:400!important;margin:0 0 2pt!important;color:#111!important}
+ .print-page table{width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;border-spacing:0!important;font-family:'Times New Roman',Times,serif!important;font-size:8pt!important;line-height:1.12!important;color:#111!important}
+ .print-page thead{display:table-header-group!important}
+ .print-page tr{break-inside:avoid!important;page-break-inside:avoid!important}
+ .print-page th,.print-page td{border:0.65pt solid #222!important;padding:3pt 3pt 2pt!important;vertical-align:top!important;text-align:left!important;font-weight:400!important;overflow-wrap:anywhere!important;word-break:normal!important;background:#fff!important;color:#111!important}
+ .print-page th{height:0.62in!important;background:#e5e5e5!important}
+ .print-page td{height:auto!important}
+ .print-page tbody td{font-size:6.4pt!important;line-height:1.08!important;padding:2pt 2pt 1pt!important}
+ .print-page tbody td:nth-child(2),.print-page tbody td:nth-child(3){font-size:6.1pt!important;line-height:1.05!important}
+ .print-page .quality-options{font-size:5.8pt!important;line-height:1.04!important;white-space:nowrap!important}
+ .print-page .quality-option{display:block!important}
+ .print-page .quality-mark{display:inline-block!important;width:7pt!important;font-weight:700!important}
+ #report tbody td{font-size:6.4pt!important;line-height:1.08!important;padding:2pt 2pt 1pt!important;overflow-wrap:anywhere!important;word-break:normal!important}
+ #report tbody td:nth-child(2),#report tbody td:nth-child(3){font-size:6.1pt!important;line-height:1.05!important}
+ .quality-options{font-size:5.8pt!important;line-height:1.04!important;white-space:nowrap!important}
+ .quality-option{display:block!important}
+ .quality-mark{display:inline-block!important;width:7pt!important;font-weight:700!important}
+ table{width:100%!important;table-layout:fixed!important;border-collapse:collapse!important;border-spacing:0!important;font-family:"Times New Roman",Times,serif!important;font-size:8pt!important;line-height:1.12!important;color:#111!important}
+ thead{display:table-header-group}
+ tr{break-inside:avoid;page-break-inside:avoid}
+ th,td{border:0.65pt solid #222!important;padding:3pt 3pt 2pt!important;vertical-align:top!important;text-align:left!important;font-weight:400!important;overflow-wrap:anywhere!important;word-break:normal!important;background:#fff!important;color:#111!important}
+ th{height:0.78in!important;background:#e5e5e5!important;font-weight:400!important}
+ td{height:0.56in!important}
+ th:nth-child(1),td:nth-child(1){width:7%!important}
+ th:nth-child(2),td:nth-child(2){width:11%!important}
+ th:nth-child(3),td:nth-child(3){width:21%!important}
+ th:nth-child(4),td:nth-child(4){width:8%!important}
+ th:nth-child(5),td:nth-child(5){width:8%!important}
+ th:nth-child(6),td:nth-child(6){width:8%!important}
+ th:nth-child(7),td:nth-child(7){width:8%!important}
+ th:nth-child(8),td:nth-child(8){width:8%!important}
+ th:nth-child(9),td:nth-child(9){width:7%!important}
+ th:nth-child(10),td:nth-child(10){width:7%!important}
+ th:nth-child(11),td:nth-child(11){width:7%!important}
+ h2{display:none!important}
+}
+</style>
+</head>
+<body>
+<header><h1>Sleep Diary</h1><div style="display:flex;align-items:center;gap:8px"><button class="theme-toggle" id="themeToggle" aria-label="Toggle color scheme" title="Toggle color scheme">◐</button><span class="badge">TEST v0.54</span></div></header>
+<nav id="tabs"><button data-tab="today" class="active">Today</button><button data-tab="diary">Diary</button><button data-tab="report">Report</button><button data-tab="settings">Settings</button><button data-tab="howto">How to</button></nav>
+<main>
+<section id="today" class="view">
+<div class="panel"><div class="event-groups">
+<div class="current-state" role="status" aria-live="polite"><strong id="currentState">Wearing device</strong></div><div class="event-group sleep"><button class="action" data-event="gotInBed">Got in bed</button><button class="action" data-event="trySleep">Try to sleep</button><button class="action" data-event="wokeUp">Woke up</button><button class="action" data-event="outOfBed">Out of bed</button></div>
+<div class="event-group nap"><button class="action" data-event="napStart">Nap start</button><button class="action" data-event="napEnd">Nap end</button></div>
+<div class="event-group device"><button class="action" data-event="deviceOff">Device off</button><button class="action" data-event="deviceOn">Device on</button></div>
+</div></div>
+<div class="panel"><button class="secondary" id="manualEntry" style="width:100%">Manual event entry</button></div>
+</section>
+
+<section id="diary" class="view hide">
+<div class="panel"><h2>Diary date</h2><label>Sleep period date <input id="dayDate" type="date"></label></div>
+<div class="panel"><h2>Recorded entries</h2><div id="events"></div><button class="secondary" id="manualEntryDiary" style="margin-top:10px;width:100%">Manual event entry</button></div>
+</section>
+
+<section id="report" class="view hide"><div class="panel"><div class="noprint" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2>Report</h2><button class="primary" id="printReport">Print / PDF</button></div><div class="print-heading"><h1>PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</h1><p>Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p>Please record any naps in the comments section.</p></div><div class="reportwrap"><table><thead><tr class="print-repeat-heading"><th colspan="11"><div class="repeat-title">PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST</div><p class="repeat-instructions">Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.</p><p class="repeat-instructions">Please record any naps in the comments section.</p></th></tr><tr><th>Today’s date</th><th>Naps you took today</th><th>Comments</th><th>Time you got into bed</th><th>Time you tried to go to sleep</th><th>Length of time it took to fall asleep</th><th>Number of awakenings</th><th>Total duration of awakenings</th><th>Time of final awakening</th><th>Time you got out of bed</th><th>Quality of sleep</th></tr></thead><tbody id="reportBody"></tbody></table></div><div id="printPages" class="print-pages" aria-hidden="true"></div></div></section>
+
+<section id="settings" class="view hide"><div class="panel"><h2>Patient label</h2><p class="muted">The label image is stored privately in this browser on this device. It is not uploaded to the repository.</p><div id="patientLabelStatus" class="muted" role="status">Checking for a stored label…</div><div id="patientLabelPreviewWrap" class="hide" style="margin:12px 0;padding:10px;border:1px solid #bbb;border-radius:8px;background:#fff"><img id="patientLabelPreview" alt="Stored patient label preview" style="display:block;max-width:100%;max-height:220px;margin:auto;object-fit:contain"></div><div class="grid"><button class="secondary" id="choosePatientLabel">Choose label image</button><button class="danger" id="clearPatientLabel" disabled>Clear stored image</button></div><input id="patientLabelFile" type="file" accept="image/jpeg,.jpg,.jpeg,image/png" class="hide"><p class="muted">Choose a JPG or PNG. The saved image can be included when printing the report.</p></div><div class="panel"><h2>Data</h2><p class="muted">Diary entries are stored on this device using IndexedDB.</p><div class="grid"><button class="secondary" id="export">Export JSON backup</button><button class="secondary" id="importBtn">Restore JSON backup</button></div><input id="importFile" type="file" accept=".json,application/json" class="hide"><br><button class="danger" id="clear">Clear all entries</button></div><div class="panel"><h2>About</h2><p class="muted">Test version for personal sleep-diary use. The electronic report and printable report will be refined against the hospital paper diary before this becomes the official version.</p></div></section>
+
+<section id="howto" class="view hide">
+<div class="panel"><h2>How to use the Sleep Diary</h2><p>Record events as they happen whenever possible. The diary saves entries on this device automatically.</p><h3>1. Record your nighttime sleep</h3><ol><li>Tap <strong>Got in bed</strong> when you get into bed.</li><li>Tap <strong>Try to sleep</strong> when you begin trying to fall asleep.</li><li>Tap <strong>Woke up</strong> when you wake for the final time. A sleep-details form will appear; enter your best estimates for sleep latency, awakenings, total time awake, sleep quality, and any comments. Save the form to keep those details.</li><li>Tap <strong>Out of bed</strong> when you actually get out of bed.</li></ol><h3>2. Record naps and device use</h3><ul><li>Tap <strong>Nap start</strong> and <strong>Nap end</strong> around each nap.</li><li>Tap <strong>Device off</strong> and <strong>Device on</strong> when you remove and replace the actigraphy device.</li><li>If you miss an event, use <strong>Manual event entry</strong> to enter its date and time. You can also add sleep details manually.</li></ul><h3>3. Review or correct entries</h3><p>Open <strong>Diary</strong>, select a sleep-period date, and review the entries. Use the pencil icon to edit an entry or the trash icon to delete it. The diary groups events into sleep periods using a noon-to-noon day boundary.</p><h3>4. Create your report</h3><p>Open <strong>Report</strong> to review the printable table. Use <strong>Print / PDF</strong> to print it or save it as a PDF. If the event sequence appears inconsistent, the app will identify a suspect event; edit or delete it and try again.</p><h3>5. Back up your data</h3><p>Open <strong>Settings</strong> and choose <strong>Export JSON backup</strong> to save a copy. <strong>Restore JSON backup</strong> replaces the entries on this device with the contents of that backup. Keep the backup file somewhere safe.</p><p class="muted">This version stores diary data in this browser on this device. It does not automatically synchronize records between devices.</p></div>
+<div class="panel"><h2>Frequently Asked Questions</h2><h3>Does the diary save automatically?</h3><p>Yes. Entries are saved in this browser on this device as you record them. Export a JSON backup periodically in case the browser data is cleared or the device is lost.</p><h3>Can I use the same diary on my phone and computer?</h3><p>Not automatically. Each device has its own local data. Use Settings to export a JSON backup on one device and restore it on the other. Restoring replaces the destination device’s existing entries, so export a backup first.</p><h3>What if I forgot to record an event?</h3><p>Use Manual event entry from the Today or Diary tab, choose the event type, and enter the correct date and time.</p><h3>Why does the diary ask about sleep details when I tap Woke up?</h3><p>Those details populate the report’s sleep-latency, awakening, awake-time, quality, and comments fields. Enter your best estimate; you can leave fields blank if you do not know the answer.</p><h3>Why can’t I open the report?</h3><p>The app checks whether events follow the expected order. A nap or device-removal event should be followed by its matching end event, and the nighttime sequence is Got in bed → Try to sleep → Woke up → Out of bed. A final incomplete cycle is allowed, but a mismatched event in the middle of the log may need correction.</p><h3>What date should I choose in the Diary tab?</h3><p>The diary uses a noon-to-noon sleep-period date: events before noon are grouped with the preceding date. This helps keep an overnight sleep period together.</p><h3>Can I edit or delete an entry?</h3><p>Yes. In Diary, use the pencil icon to edit an event’s type, date, or time. Sleep-details entries have their own edit form. The trash icon deletes an entry after confirmation.</p><h3>What does Export JSON backup do?</h3><p>It downloads a file containing the diary records. Keep it private because it may contain sensitive health-related information. Restoring a backup replaces the current records rather than merging them.</p><h3>Is my diary available to the hospital?</h3><p>No. This prototype stores data locally in your browser and does not send it to a hospital or cloud database. You can create a report to share yourself.</p></div>
+</section>
+</main>
+<script>
+const DB='sleep-diary-test', STORE='records'; let currentDate='';
+const labels={gotInBed:'Got in bed',trySleep:'Try to sleep',wokeUp:'Woke up',outOfBed:'Out of bed',napStart:'Nap start',napEnd:'Nap end',deviceOff:'Device off',deviceOn:'Device on',sleepDetails:'Sleep details'};
+function db(){return new Promise((res,rej)=>{let r=indexedDB.open(DB,2);r.onupgradeneeded=()=>{let d=r.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function all(){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>res((r.result||[]).sort((a,b)=>a.t-b.t));r.onerror=()=>rej(r.error)})}
+async function putRecord(x){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE,'readwrite').objectStore(STORE).put(x);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+async function deleteRecord(id){let d=await db();return new Promise((res,rej)=>{let r=d.transaction(STORE,'readwrite').objectStore(STORE).delete(id);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)})}
+async function replaceAll(records){let d=await db();return new Promise((res,rej)=>{let tx=d.transaction(STORE,'readwrite'),s=tx.objectStore(STORE);s.clear();records.forEach(x=>s.put(x));tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+async function recordsForDay(date){return (await all()).filter(r=>diaryForTimestamp(r.t)===date)}
+function todayDiary(){let d=new Date();if(d.getHours()<12)d.setDate(d.getDate()-1);return d.toISOString().slice(0,10)}
+function tsInput(ms){let d=new Date(ms);let p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())}
+function fmt(ms){return new Date(ms).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}
+function localMs(date,time){let [y,m,d]=date.split('-').map(Number),[hh,mm]=time.split(':').map(Number);return new Date(y,m-1,d,hh,mm).getTime()}
+function diaryForTimestamp(t){let d=new Date(t);if(d.getHours()<12)d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function reminder(type){if(type!=='gotInBed'&&type!=='outOfBed')alert('Press the button on the device!')}
+const legalNext={
+ wearingDevice:['deviceOff','napStart','gotInBed'],
+ inBed:['trySleep'],
+ sleeping:['wokeUp'],
+ wakingUp:['outOfBed'],
+ deviceOff:['deviceOn'],
+ napping:['napEnd']
+};
+function stateFromType(type){
+ if(type==='gotInBed')return 'inBed';
+ if(type==='trySleep')return 'sleeping';
+ if(type==='wokeUp')return 'wakingUp';
+ if(type==='outOfBed'||type==='deviceOn'||type==='napEnd')return 'wearingDevice';
+ if(type==='deviceOff')return 'deviceOff';
+ if(type==='napStart')return 'napping';
+ return null;
+}
+async function currentDiaryState(records){
+ const latest=records.filter(r=>r.type!=='sleepDetails').sort((a,b)=>a.t-b.t).at(-1);
+ return latest?stateFromType(latest.type)||'wearingDevice':'wearingDevice';
+}
+async function updateEventButtons(){
+ const records=await all(),latestState=await currentDiaryState(records),allowed=legalNext[latestState]||[];
+ const stateNames={wearingDevice:'Wearing device',inBed:'In bed',sleeping:'Sleeping',wakingUp:'Waking up',deviceOff:'Device off',napping:'Napping'};
+ const stateLabel=document.getElementById('currentState');
+ if(stateLabel)stateLabel.textContent=stateNames[latestState]||'Wearing device';
+ document.querySelectorAll('[data-event]').forEach(b=>{
+  const enabled=allowed.includes(b.dataset.event);
+  b.disabled=!enabled;b.setAttribute('aria-disabled',String(!enabled));
+  b.title=enabled?'':'Not available in the current diary state';
+ });
+}
+function stateTransitionAllowed(type,state){return (legalNext[state]||[]).includes(type)}
+async function record(type, opts={}) {
+  const records=await all(), latest=records.length?Math.max(...records.map(r=>Number(r.t))):-Infinity;
+  const t=opts.t??Date.now(), isManual=!!opts.manual;
+  if(records.some(r=>Number(r.t)===Number(t))){alert('This entry was not saved because another diary entry already has exactly the same date and time. Choose a different time.');return false}
+  const latestState=await currentDiaryState(records);
+  if(!isManual && !stateTransitionAllowed(type,latestState)){alert('This activity is not available in the current state. Please use one of the enabled buttons.');return false}
+  if(isManual && type!=='sleepDetails' && t>latest && !stateTransitionAllowed(type,latestState)){alert('This entry was not saved because it is not a legal next activity for the current state. Choose the appropriate next activity, or enter this as a backdated event if it occurred earlier.');return false}
+  reminder(type);
+  let e={id:crypto.randomUUID(),type,t};
+  let details=opts.details;
+  if(type==='wokeUp' && details===undefined) details=await detailsDialog();
+  await putRecord(e);
+  if(type==='wokeUp' && details)await addSleepDetails(t,details);
+  currentDate=diaryForTimestamp(t);document.getElementById('dayDate').value=currentDate;await loadDay();await renderReport();await updateEventButtons();return true;
+}
+async function addSleepDetails(t,details){
+  if(!details)return;
+  await putRecord({id:crypto.randomUUID(),type:'sleepDetails',t,lat:details.lat,awak:details.awak,awakeDur:details.awakeDur,quality:details.quality,comments:details.comments});
+}
+function detailsDialog(){
+  return new Promise(resolve=>{
+    const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+    overlay.innerHTML='<div class="dialog"><h2>Sleep details</h2><label>Sleep latency (minutes)<input id="dlat" type="number" min="0"></label><label>Number of awakenings<input id="dawak" type="number" min="0"></label><label>Total awake time (minutes)<input id="dawake" type="number" min="0"></label><label>Sleep quality<select id="dquality"><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea id="dcomments" placeholder="Unusual schedule, medication, alcohol/caffeine, illness, device removal, etc."></textarea></label><div class="dialog-actions"><button class="secondary" id="dcancel">Cancel</button><button class="primary" id="dsave">Save</button></div></div>';
+    document.body.append(overlay);overlay.querySelector('#dcancel').onclick=()=>{overlay.remove();resolve(null)};overlay.querySelector('#dsave').onclick=()=>{let v={lat:overlay.querySelector('#dlat').value,awak:overlay.querySelector('#dawak').value,awakeDur:overlay.querySelector('#dawake').value,quality:overlay.querySelector('#dquality').value,comments:overlay.querySelector('#dcomments').value};overlay.remove();resolve(v)};
+  });
+}
+async function editEvent(id){
+  let e=(await all()).find(e=>e.id===id);if(!e)return;
+  const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+  const box=document.createElement('div');box.className='dialog';
+  box.innerHTML='<h2>Edit entry</h2><label>Event type<select></select></label><label>Date<input type="date"></label><label>Time<input type="time"></label><div class="dialog-actions"><button class="secondary">Cancel</button><button class="primary">Save</button></div>';
+  overlay.append(box);document.body.append(overlay);
+  const sel=box.querySelector('select'),dateInput=box.querySelector('input[type="date"]'),timeInput=box.querySelector('input[type="time"]'),cancel=box.querySelector('.secondary'),save=box.querySelector('.primary');
+  Object.entries(labels).filter(([k])=>k!=='sleepDetails').forEach(([k,v])=>{let o=document.createElement('option');o.value=k;o.textContent=v;sel.append(o)});
+  let d=new Date(e.t),p=n=>String(n).padStart(2,'0');sel.value=e.type;dateInput.value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());timeInput.value=p(d.getHours())+':'+p(d.getMinutes());
+  cancel.onclick=()=>overlay.remove();
+  save.onclick=async()=>{
+    if(!dateInput.value||!timeInput.value){alert('Please enter both a date and time.');return}
+    e.t=localMs(dateInput.value,timeInput.value);e.type=sel.value;await putRecord(e);currentDate=diaryForTimestamp(e.t);overlay.remove();document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();await updateEventButtons();
+  };
+}
+async function editDetails(id){
+  let d=(await all()).find(q=>q.id===id);if(!d)return;
+  const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+  const box=document.createElement('div');box.className='dialog';
+  box.innerHTML='<h2>Edit sleep details</h2><label>Date<input type="date"></label><label>Time<input type="time"></label><label>Sleep latency (minutes)<input type="number" min="0"></label><label>Number of awakenings<input type="number" min="0"></label><label>Total awake time (minutes)<input type="number" min="0"></label><label>Sleep quality<select><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea></textarea></label><div class="dialog-actions"><button class="secondary">Cancel</button><button class="primary">Save</button></div>';
+  overlay.append(box);document.body.append(overlay);
+  const inputs=box.querySelectorAll('input'),dateInput=inputs[0],timeInput=inputs[1],lat=inputs[2],awak=inputs[3],awakeDur=inputs[4],quality=box.querySelector('select'),comments=box.querySelector('textarea'),cancel=box.querySelector('.secondary'),save=box.querySelector('.primary');
+  let z=new Date(d.t),p=n=>String(n).padStart(2,'0');dateInput.value=z.getFullYear()+'-'+p(z.getMonth()+1)+'-'+p(z.getDate());timeInput.value=p(z.getHours())+':'+p(z.getMinutes());lat.value=d.lat??'';awak.value=d.awak??'';awakeDur.value=d.awakeDur??'';quality.value=d.quality??'';comments.value=d.comments??'';
+  cancel.onclick=()=>overlay.remove();
+  save.onclick=async()=>{
+    if(!dateInput.value||!timeInput.value){alert('Please enter both a date and time.');return}
+    d.t=localMs(dateInput.value,timeInput.value);Object.assign(d,{lat:lat.value,awak:awak.value,awakeDur:awakeDur.value,quality:quality.value,comments:comments.value});await putRecord(d);currentDate=diaryForTimestamp(d.t);overlay.remove();document.getElementById('dayDate').value=currentDate;await loadDay();await renderAll();await updateEventButtons();
+  };
+}
+async function deleteEntry(id,kind){
+  if(!confirm('Delete this entry?'))return;if(!confirm('Are you sure you want to permanently delete this entry?'))return;
+  await deleteRecord(id);await loadDay();renderAll();await updateEventButtons();
+}
+function renderEvents(items){
+  let el=document.getElementById('events');
+  items=[...items].sort((a,b)=>b.t-a.t);
+  el.innerHTML=items.length?items.map(e=>{if(e.type==='sleepDetails')return '<div class="event"><div><strong>Sleep details</strong><br><small>'+fmt(e.t)+'</small><br><small>Latency: '+(e.lat||'—')+' min · Awakenings: '+(e.awak||'—')+' · Awake: '+(e.awakeDur||'—')+' min · '+(e.quality||'No quality')+(e.comments?' · '+String(e.comments).replaceAll('<','&lt;'):'')+'</small></div><div style="display:flex;gap:6px"><button class="secondary icon-btn" aria-label="Edit sleep details" title="Edit" onclick="editDetails(\''+e.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18.8 8.7l-3.5-3.5-12.3 11.3zM20.7 6.8a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0-1.4 0l-1.1 1.1 3.5 3.5 2.1-1.1z"/></svg></button><button class="danger icon-btn" aria-label="Delete sleep details" title="Delete" onclick="deleteEntry(\''+e.id+'\',\'details\')\"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12L17 21H7L6 9zm3 2v8h2v-8H9zm4 0v8h2v-8h-2z"/></svg></button></div></div>';
+    return '<div class="event"><div><strong>'+labels[e.type]+'</strong><br><small>'+fmt(e.t)+'</small></div><div style="display:flex;gap:6px"><button class="secondary icon-btn" aria-label="Edit entry" title="Edit" onclick="editEvent(\''+e.id+'\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18.8 8.7l-3.5-3.5-12.3 11.3zM20.7 6.8a1 1 0 0 0 0-1.4l-2.1-2.1a1 1 0 0 0 0-1.4l-2.1-2.1-1.1 1.1 3.5 3.5 2.1-1.1z"/></svg></button><button class="danger icon-btn" aria-label="Delete entry" title="Delete" onclick="deleteEntry(\''+e.id+'\',\'event\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm-3 6h12L17 21H7L6 9zm3 2v8h2v-8H9zm4 0v8h2v-8h-2z"/></svg></button></div></div>'
+  }).join(''):'<p class="muted">No entries recorded.</p>'
+}
+async function loadDay(){renderEvents(await recordsForDay(currentDate))}
+async function manualEntry(){
+ const overlay=document.createElement('div');overlay.className='dialog-backdrop';overlay.innerHTML='<div class="dialog"><h2>Manual entry</h2><label>Entry type<select id="mtype"><option value="gotInBed">Got in bed</option><option value="trySleep">Try to sleep</option><option value="wokeUp">Woke up</option><option value="outOfBed">Out of bed</option><option value="napStart">Nap start</option><option value="napEnd">Nap end</option><option value="deviceOff">Device off</option><option value="deviceOn">Device on</option><option value="sleepDetails">Sleep details</option></select></label><label>Date<input id="mdate" type="date" value="'+currentDate+'"></label><label>Time<input id="mtime" type="time"></label><div id="manualDetails" class="hide"></div><div class="dialog-actions"><button class="secondary" id="mcancel">Cancel</button><button class="primary" id="msave">Save</button></div></div>';document.body.append(overlay);
+ const type=overlay.querySelector('#mtype'), details=overlay.querySelector('#manualDetails');
+ function renderManual(){details.classList.toggle('hide',type.value!=='sleepDetails');if(type.value==='sleepDetails')details.innerHTML='<label>Sleep latency (minutes)<input id="mlat" type="number" min="0"></label><label>Number of awakenings<input id="mawak" type="number" min="0"></label><label>Total awake time (minutes)<input id="mawake" type="number" min="0"></label><label>Sleep quality<select id="mquality"><option value="">Select</option><option>Very poor</option><option>Poor</option><option>Fair</option><option>Good</option><option>Very good</option></select></label><label>Comments<textarea id="mcomments"></textarea></label>'}type.onchange=renderManual;renderManual();
+ overlay.querySelector('#mcancel').onclick=()=>overlay.remove();
+ overlay.querySelector('#msave').onclick=async()=>{
+  if(!overlay.querySelector('#mdate').value||!overlay.querySelector('#mtime').value){alert('Please enter both a date and time.');return}
+  let t=localMs(overlay.querySelector('#mdate').value,overlay.querySelector('#mtime').value),typev=type.value;
+  const records=await all();
+  if(records.some(r=>Number(r.t)===Number(t))){alert('This entry was not saved because another diary entry already has exactly the same date and time. Choose a different time.');return}
+  if(typev==='sleepDetails'){
+   await addSleepDetails(t,{lat:overlay.querySelector('#mlat').value,awak:overlay.querySelector('#mawak').value,awakeDur:overlay.querySelector('#mawake').value,quality:overlay.querySelector('#mquality').value,comments:overlay.querySelector('#mcomments').value});
+   currentDate=diaryForTimestamp(t);overlay.remove();await loadDay();await renderAll();await updateEventButtons();return
+  }
+  const latest=records.length?Math.max(...records.map(r=>Number(r.t))):-Infinity;
+  const state=await currentDiaryState(records);
+  if(t>latest&&!stateTransitionAllowed(typev,state)){alert('This entry was not saved because it is not a legal next activity for the current state. Choose the appropriate next activity, or enter this as a backdated event if it occurred earlier.');return}
+  const saved=await record(typev,{t,details:null,manual:true});
+  if(saved)overlay.remove();
+ };
+}
+
+function reportDate(t){let d=new Date(t);d.setDate(d.getDate()-1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function sequenceEvents(records){return records.filter(r=>r.type!=='sleepDetails').sort((a,b)=>a.t-b.t)}
+function validateSequence(records){
+ const es=sequenceEvents(records);let i=0;
+ const pairTypes={deviceOff:'deviceOn',napStart:'napEnd'};
+ while(i<es.length){
+  let e=es[i];
+  if(pairTypes[e.type]){
+   let want=pairTypes[e.type],next=es[i+1];
+   if(!next)return null;
+   if(next.type!==want){return {event:e,before:es[i-1]||null,after:next,reason:'This pair must be immediately followed by “'+labels[want]+'”.'}}
+   i+=2;continue;
+  }
+  if(e.type==='gotInBed'){
+   const wanted=['trySleep','wokeUp','outOfBed'];
+   for(let j=0;j<wanted.length;j++){
+    let n=es[i+j+1];
+    if(!n)return null;
+    if(n.type!==wanted[j])return {event:n,before:es[i+j]||null,after:es[i+j+2]||null,reason:'After “'+labels[es[i+j]?.type||e.type]+'”, the next event must be “'+labels[wanted[j]]+'”.'};
+   }
+   i+=4;continue;
+  }
+  return {event:e,before:es[i-1]||null,after:es[i+1]||null,reason:'This event does not fit the required sequence. Device and nap pairs must come first, followed by got in bed → try to sleep → woke up → out of bed.'};
+ }
+ return null;
+}
+function eventSummary(e){return e?labels[e.type]+' — '+fmt(e.t):'None'}
+function showSequenceProblem(problem){
+ const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+ const e=problem.event;
+ overlay.innerHTML='<div class="dialog"><h2>Event sequence needs attention</h2><p>'+problem.reason+'</p><p><strong>Event before:</strong> '+eventSummary(problem.before)+'</p><p><strong>Suspect event:</strong> '+eventSummary(e)+'</p><p><strong>Event after:</strong> '+eventSummary(problem.after)+'</p><p class="muted">Edit or delete the suspect event, then check the sequence again before generating the report.</p><div class="dialog-actions"><button class="secondary" id="seqClose">Close</button><button class="danger" id="seqDelete">Delete event</button><button class="primary" id="seqEdit">Edit event</button></div></div>';
+ document.body.append(overlay);
+ overlay.querySelector('#seqClose').onclick=()=>overlay.remove();
+ overlay.querySelector('#seqEdit').onclick=()=>{overlay.remove();if(e) e.type==='sleepDetails'?editDetails(e.id):editEvent(e.id)};
+ overlay.querySelector('#seqDelete').onclick=async()=>{if(!e)return;overlay.remove();await deleteRecord(e.id);await loadDay();await renderAll();await openReportIfValid()};
+}
+function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+function clock(t){return t?new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'—'}
+function elapsed(a,b){if(!a||!b)return '—';let n=Math.round((b.t-a.t)/60000);return n<0?'—':n+' min'}
+function buildReportRows(records){
+ const es=sequenceEvents(records), details=records.filter(r=>r.type==='sleepDetails').sort((a,b)=>a.t-b.t), periods=[];
+ let i=0,pendingPairs=[];
+ while(i<es.length){
+  if(es[i].type==='deviceOff'||es[i].type==='napStart'){const next=es[i+1];pendingPairs.push([es[i],next||null]);i+=next?2:1;continue}
+  if(es[i].type!=='gotInBed'){i++;continue}
+  const got=es[i],tryS=es[i+1]?.type==='trySleep'?es[i+1]:null,wake=es[i+2]?.type==='wokeUp'?es[i+2]:null,out=es[i+3]?.type==='outOfBed'?es[i+3]:null,td=wake?reportDate(wake.t):'—';
+  const periodPairs=pendingPairs;pendingPairs=[];
+  const periodDetails=wake?(details.filter(d=>Math.abs(d.t-wake.t)<60000).slice(-1)[0]||details.filter(d=>reportDate(d.t)===td).slice(-1)[0]):null;
+  const naps=periodPairs.filter(p=>p[0].type==='napStart').map(p=>clock(p[0].t)+'–'+clock(p[1]?.t)).join('; ')||'—';
+  const device=periodPairs.filter(p=>p[0].type==='deviceOff').map(p=>clock(p[0].t)+'–'+clock(p[1]?.t)).join('; ');
+  periods.push({td,naps,comments:[device?'Device off/on: '+device:'',periodDetails?.comments||''].filter(Boolean).join(' | ')||'—',got,tryS,wake,out,details:periodDetails});
+  i+=1+(tryS?1:0)+(wake?1:0)+(out?1:0);
+ }
+ if(pendingPairs.length){
+  // Only the trailing events use their own local calendar dates. Completed
+  // sleep-period rows above intentionally retain the original date logic.
+  const trailingByDate=new Map();
+  const addTrailing=(event,kind)=>{
+   if(!event)return;
+   const d=new Date(event.t),td=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+   if(!trailingByDate.has(td))trailingByDate.set(td,{td,naps:[],comments:[],got:null,tryS:null,wake:null,out:null,details:null});
+   const row=trailingByDate.get(td);
+   row[kind].push({event});
+  };
+  pendingPairs.forEach(([start,end])=>{
+   const isNap=start.type==='napStart';
+   const bucket=isNap?'naps':'comments';
+   const startDate=new Date(start.t),startKey=startDate.getFullYear()+'-'+String(startDate.getMonth()+1).padStart(2,'0')+'-'+String(startDate.getDate()).padStart(2,'0');
+   const endDate=end?new Date(end.t):null,endKey=endDate?endDate.getFullYear()+'-'+String(endDate.getMonth()+1).padStart(2,'0')+'-'+String(endDate.getDate()).padStart(2,'0'):null;
+   if(!end || startKey===endKey){
+    addTrailing(start,bucket);
+   }else{
+    addTrailing(start,bucket);
+    addTrailing(end,bucket);
+   }
+  });
+  for(const row of trailingByDate.values()){
+   const napItems=row.naps.map(x=>x.event);
+   const deviceItems=row.comments.map(x=>x.event);
+   row.naps=napItems.map((e,i)=>{
+    if(e.type==='napStart'){
+     const pair=pendingPairs.find(p=>p[0].id===e.id);
+     return pair&&pair[1]&&new Date(pair[1].t).toDateString()===new Date(e.t).toDateString()?clock(e.t)+'–'+clock(pair[1].t):'Nap start: '+clock(e.t);
+    }
+    return 'Nap end: '+clock(e.t);
+   }).join('; ')||'—';
+   row.comments=deviceItems.map(e=>{
+    if(e.type==='deviceOff'){
+     const pair=pendingPairs.find(p=>p[0].id===e.id);
+     return pair&&pair[1]&&new Date(pair[1].t).toDateString()===new Date(e.t).toDateString()?'Device off/on: '+clock(e.t)+'–'+clock(pair[1].t):'Device off: '+clock(e.t);
+    }
+    return 'Device on: '+clock(e.t);
+   }).join('; ')||'—';
+   periods.push(row);
+  }
+ }
+ const qualityOptions=['Very poor','Poor','Fair','Good','Very good'];
+ return periods.map(p=>{
+  const selected=String(p.details?.quality||'').trim().toLowerCase();
+  const qualityHtml='<div class="quality-options">'+qualityOptions.map(q=>'<span class="quality-option"><span class="quality-mark">'+(selected===q.toLowerCase()?'✓':'')+'</span>'+q+'</span>').join('')+'</div>';
+  return '<tr><td>'+esc(p.td)+'</td><td>'+esc(p.naps)+'</td><td>'+esc(p.comments)+'</td><td>'+clock(p.got?.t)+'</td><td>'+clock(p.tryS?.t)+'</td><td>'+esc(p.details?.lat!==undefined&&p.details.lat!==''?p.details.lat+' min':'—')+'</td><td>'+esc(p.details?.awak||'—')+'</td><td>'+esc(p.details?.awakeDur!==undefined&&p.details.awakeDur!==''?p.details.awakeDur+' min':'—')+'</td><td>'+clock(p.wake?.t)+'</td><td>'+clock(p.out?.t)+'</td><td>'+qualityHtml+'</td></tr>';
+ }).join('');
+}
+let printLabelData='';
+function buildPrintPages(){
+ const source=document.querySelector('#report .reportwrap table');
+ const host=document.getElementById('printPages');
+ if(!source||!host)throw new Error('The report table could not be found.');
+ host.innerHTML='';
+ const rows=Array.from(source.querySelectorAll('tbody tr'));
+ const headers=Array.from(source.querySelectorAll('thead tr:last-child th')).map(th=>th.textContent);
+ const pageHeight=5.55*96;
+ const makePage=(container)=>{
+  const page=document.createElement('section');page.className='print-page';
+  const title=document.createElement('div');title.className='print-page-title';title.textContent='PATIENT INFORMATION AND INSTRUCTIONS FOR SLEEP DIARY PRIOR TO MULTIPLE SLEEP LATENCY TEST';page.appendChild(title);
+  const p1=document.createElement('p');p1.className='print-page-instructions';p1.textContent='Please complete a sleep diary for the 2-weeks leading up to your Multiple Sleep Latency Test.';page.appendChild(p1);
+  const p2=document.createElement('p');p2.className='print-page-instructions';p2.textContent='Please record any naps in the comments section.';page.appendChild(p2);
+  const table=document.createElement('table'),thead=document.createElement('thead'),tr=document.createElement('tr');
+  headers.forEach(label=>{const th=document.createElement('th');th.textContent=label;tr.appendChild(th)});
+  thead.appendChild(tr);table.appendChild(thead);
+  const tbody=document.createElement('tbody');table.appendChild(tbody);page.appendChild(table);
+  if(printLabelData){const label=document.createElement('img');label.className='print-label';label.alt='Patient label';label.src=printLabelData;page.appendChild(label);}
+  container.appendChild(page);return {page,tbody};
+ };
+ const measure=document.createElement('div');
+ measure.className='print-measure';measure.style.cssText='position:absolute;left:-30000px;top:0;width:10.4in;height:auto;visibility:hidden;display:block;overflow:visible;';
+ document.body.appendChild(measure);
+ try{
+  const pages=[];let current=makePage(measure);
+  rows.forEach(row=>{const clone=row.cloneNode(true);current.tbody.appendChild(clone);if(current.page.getBoundingClientRect().height>pageHeight&&current.tbody.children.length>1){current.tbody.removeChild(clone);pages.push(current.page);current=makePage(measure);current.tbody.appendChild(clone)}});
+  pages.push(current.page);
+  pages.forEach(page=>{page.remove();host.appendChild(page)});
+ }finally{measure.remove()}
+ if(!host.children.length)throw new Error('No report pages were created. Check that the diary contains reportable entries.');
+}
+async function renderReport(){const records=await all();const problem=validateSequence(records);if(problem){document.getElementById('reportBody').innerHTML='';return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
+async function renderAll(){await renderReport()}
+async function openReportIfValid(){const records=await all(),problem=validateSequence(records);if(problem){showSequenceProblem(problem);return false}document.getElementById('reportBody').innerHTML=buildReportRows(records);return true}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{if(b.dataset.tab==='report'&&!await openReportIfValid())return;document.querySelectorAll('[data-tab]').forEach(q=>q.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.add('hide'));document.getElementById(b.dataset.tab).classList.remove('hide');if(b.dataset.tab==='report')await renderAll()});
+function openLabelDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open('SleepDiaryPrivateAssets',1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains('assets'))req.result.createObjectStore('assets')};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function getSavedPatientLabel(){const db=await openLabelDB();return await new Promise((resolve,reject)=>{const tx=db.transaction('assets','readonly'),req=tx.objectStore('assets').get('patientLabel');req.onsuccess=()=>resolve(req.result||'');req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();tx.onerror=()=>{db.close();reject(tx.error)}})}
+async function savePatientLabel(data){const db=await openLabelDB();return await new Promise((resolve,reject)=>{const tx=db.transaction('assets','readwrite');tx.objectStore('assets').put(data,'patientLabel');tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)};tx.onabort=()=>{db.close();reject(tx.error)}})}
+async function deleteSavedPatientLabel(){const db=await openLabelDB();return await new Promise((resolve,reject)=>{const tx=db.transaction('assets','readwrite');tx.objectStore('assets').delete('patientLabel');tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{db.close();reject(tx.error)};tx.onabort=()=>{db.close();reject(tx.error)}})}
+let cachedPatientLabel='';
+async function refreshPatientLabelUI(){
+ const status=document.getElementById('patientLabelStatus'),wrap=document.getElementById('patientLabelPreviewWrap'),preview=document.getElementById('patientLabelPreview'),clear=document.getElementById('clearPatientLabel');
+ try{cachedPatientLabel=await getSavedPatientLabel();if(cachedPatientLabel){preview.src=cachedPatientLabel;wrap.classList.remove('hide');status.textContent='A patient label image is stored on this device.';clear.disabled=false}else{preview.removeAttribute('src');wrap.classList.add('hide');status.textContent='No patient label image is stored.';clear.disabled=true}}
+ catch(e){status.textContent='Could not access local label storage. Try reloading the app.';clear.disabled=true}
+}
+document.getElementById('choosePatientLabel').onclick=()=>document.getElementById('patientLabelFile').click();
+document.getElementById('patientLabelFile').onchange=async e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ if(!/^image\/(jpeg|png)$/.test(file.type)){alert('Please choose a JPG or PNG image.');e.target.value='';return}
+ const reader=new FileReader();
+ reader.onerror=()=>alert('The selected image could not be read. Please try another image.');
+ reader.onload=async()=>{try{const data=String(reader.result||'');if(!data)throw new Error('Empty image');await savePatientLabel(data);await refreshPatientLabelUI();alert('Patient label saved on this device.')}catch(err){alert('The label could not be saved. Check available storage and try again.')}};
+ reader.readAsDataURL(file);e.target.value='';
+};
+document.getElementById('clearPatientLabel').onclick=async()=>{if(!cachedPatientLabel)return;if(!confirm('Clear the stored patient label image from this device?'))return;try{await deleteSavedPatientLabel();await refreshPatientLabelUI()}catch(e){alert('The stored label could not be cleared. Please try again.')}};
+refreshPatientLabelUI();
+function printWithLabelChoice(include){
+ try{
+  if(include&&!cachedPatientLabel){alert('No label image is stored yet. Open Settings and choose a label image, then try printing again.');return}
+  printLabelData=include?cachedPatientLabel:'';
+  buildPrintPages();
+  // Launch printing directly from the user's Continue tap, without an extra app dialog.
+  window.print();
+ }catch(e){alert('The report could not be printed: '+(e&&e.message?e.message:'unknown error'))}
+}
+function showPrintLabelPrompt(){
+ const overlay=document.createElement('div');overlay.className='dialog-backdrop';
+ overlay.innerHTML='<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="printLabelTitle"><h2 id="printLabelTitle">Print report</h2><p>Would you like to include the patient label?</p><p class="muted">The label will appear in the bottom-right corner of each page.</p><div style="display:flex;flex-direction:column;gap:10px;margin-top:16px"><label style="display:flex;align-items:center;gap:10px;margin:0;font-size:16px"><input type="radio" name="printLabelChoice" value="yes" checked style="width:auto;margin:0">Yes, include the label</label><label style="display:flex;align-items:center;gap:10px;margin:0;font-size:16px"><input type="radio" name="printLabelChoice" value="no" style="width:auto;margin:0">No, omit the label</label></div><div class="dialog-actions"><button class="secondary" id="printLabelCancel">Cancel</button><button class="primary" id="printLabelContinue">Continue</button></div></div>';
+ document.body.append(overlay);overlay.querySelector('#printLabelCancel').onclick=()=>overlay.remove();overlay.querySelector('#printLabelContinue').onclick=()=>{const include=overlay.querySelector('input[name="printLabelChoice"]:checked')?.value==='yes';overlay.remove();printWithLabelChoice(include)}
+}
+document.getElementById('printReport').onclick=async()=>{try{if(!await openReportIfValid())return;showPrintLabelPrompt()}catch(e){alert('The report could not be opened: '+(e&&e.message?e.message:'unknown error'))}};
+document.querySelectorAll('[data-event]').forEach(b=>b.onclick=()=>record(b.dataset.event));document.getElementById('manualEntry').onclick=manualEntry;document.getElementById('manualEntryDiary').onclick=manualEntry;
+document.getElementById('dayDate').onchange=async e=>{currentDate=e.target.value;await loadDay()};
+document.getElementById('export').onclick=async()=>{let data={schemaVersion:2,records:await all()},blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sleep-diary-backup-v2-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href)};
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let data=JSON.parse(await f.text());let records;if(data&&data.schemaVersion===2&&Array.isArray(data.records)){records=data.records}else if(Array.isArray(data)){records=[];data.forEach(day=>{(day.events||[]).forEach(r=>records.push({...r}));(day.details||[]).forEach(r=>records.push({...r}));});records.sort((a,b)=>a.t-b.t)}else throw Error();if(!records.every(r=>r&&r.id&&r.type&&Number.isFinite(Number(r.t))))throw Error();if(!confirm('Restore this backup and replace all current entries?'))return;await replaceAll(records);currentDate=todayDiary();await loadDay();await renderAll();await updateEventButtons();alert('Backup restored.')}catch(_){alert('Invalid or unsupported backup file.')}e.target.value=''};
+document.getElementById('clear').onclick=async()=>{if(!confirm('Clear ALL sleep-diary entries?'))return;if(!confirm('This cannot be undone unless you have a backup. Clear everything?'))return;await replaceAll([]);currentDate=todayDiary();await loadDay();await renderAll();await updateEventButtons();alert('All entries cleared.')};
+let manualTheme=localStorage.getItem('sleepDiaryTheme')||'auto';
+function updateTimeTheme(){let h=new Date().getHours(),autoNight=h>=20||h<6;let night=manualTheme==='night'||(manualTheme==='auto'&&autoNight);document.documentElement.classList.toggle('night',night);document.getElementById('themeColor').content=night?'#101722':'#f6f6f4';document.getElementById('themeToggle').textContent=manualTheme==='auto'?'◐':(night?'☾':'☀');document.getElementById('themeToggle').title=manualTheme==='auto'?'Automatic color scheme':(night?'Nighttime color scheme':'Daytime color scheme')}
+document.getElementById('themeToggle').onclick=()=>{manualTheme=manualTheme==='auto'?'night':manualTheme==='night'?'day':'auto';localStorage.setItem('sleepDiaryTheme',manualTheme);updateTimeTheme()};
+updateTimeTheme();setInterval(()=>{if(manualTheme==='auto')updateTimeTheme()},60000);
+async function ensure(){if(!currentDate)currentDate=todayDiary();document.getElementById('dayDate').value=currentDate;await loadDay()}
+ensure().then(async()=>{await renderAll();await updateEventButtons()});
+</script>
+</body></html>
